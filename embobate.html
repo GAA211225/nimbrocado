@@ -49,8 +49,8 @@
   .tab { padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; background: transparent; color: #6B6A65; transition: all 0.15s; }
   .tab.active { background: #fff; color: #1A1A18; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
 
-  .main-nav { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid #E5E3DB; }
-  .main-nav-btn { padding: 10px 18px; border: none; background: none; cursor: pointer; font-size: 14px; font-weight: 700; color: #6B6A65; display: flex; align-items: center; gap: 6px; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
+  .main-nav { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid #E5E3DB; overflow-x: auto; }
+  .main-nav-btn { padding: 10px 18px; border: none; background: none; cursor: pointer; font-size: 14px; font-weight: 700; color: #6B6A65; display: flex; align-items: center; gap: 6px; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
   .main-nav-btn:hover { color: #1A1A18; }
   .main-nav-btn.active { color: #1A1A18; border-bottom-color: #1A1A18; }
 
@@ -219,10 +219,57 @@
   .conn-ok { background: #EAF3DE; color: #3B6D11; }
   .conn-bad { background: #FAECE7; color: #993C1D; }
 
+  /* --- Búsqueda en pedidos --- */
+  .search-wrap { position: relative; display: flex; align-items: center; }
+  .search-wrap > i { position: absolute; left: 10px; color: #9C9A91; font-size: 15px; pointer-events: none; }
+  .search-input { padding: 8px 30px 8px 32px; border: 1px solid #DCDAD2; border-radius: 8px; font-size: 13px; font-weight: 600; background: #fff; color: #1A1A18; outline: none; min-width: 210px; }
+  .search-input:focus { border-color: #1A1A18; box-shadow: 0 0 0 3px rgba(26,26,24,0.10); }
+  .search-clear { position: absolute; right: 7px; border: none; background: none; cursor: pointer; color: #9C9A91; font-size: 13px; font-weight: 800; padding: 2px 4px; }
+  .search-clear:hover { color: #1A1A18; }
+  .client-name.linked { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+  .client-name.linked:hover { color: #185FA5; }
+  .table-card.compact table { min-width: 420px; }
+
+  /* --- Ruta de entregas --- */
+  .ruta-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .ruta-group-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #6B6A65; margin: 18px 0 8px; }
+  .ruta-card { display: flex; align-items: flex-start; gap: 12px; border: 1px solid #E5E3DB; border-radius: 12px; padding: 12px 14px; background: #fff; margin-bottom: 8px; }
+  .ruta-card.sel { border-color: #1A1A18; background: #FAF9F5; }
+  .ruta-check { width: 21px; height: 21px; flex-shrink: 0; cursor: pointer; accent-color: #1A1A18; margin-top: 2px; }
+  .ruta-body { flex: 1; min-width: 0; }
+  .ruta-cliente { font-weight: 800; font-size: 14px; }
+  .ruta-meta { font-size: 12px; color: #6B6A65; font-weight: 600; margin-top: 2px; }
+  .ruta-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .ruta-right { text-align: right; flex-shrink: 0; font-weight: 800; font-size: 14px; }
+
+  /* --- Corte de caja --- */
+  .caja-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .caja-card { background: #fff; border: 1px solid #E5E3DB; border-radius: 12px; padding: 14px 16px; }
+  .caja-label { font-size: 12px; font-weight: 700; color: #6B6A65; }
+  .caja-val { font-size: 23px; font-weight: 800; letter-spacing: -0.02em; margin-top: 5px; }
+  .caja-val.in { color: #3B6D11; }
+  .caja-val.out { color: #993C1D; }
+
+  /* --- Toast / deshacer --- */
+  .toast-wrap { position: fixed; left: 50%; transform: translateX(-50%); bottom: 22px; z-index: 500; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+  .toast { background: #1A1A18; color: #fff; border-radius: 10px; padding: 12px 16px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 16px; box-shadow: 0 8px 28px rgba(0,0,0,0.28); pointer-events: auto; max-width: 90vw; }
+  .toast button { background: none; border: none; color: #F5B95B; font-weight: 800; cursor: pointer; font-size: 13px; white-space: nowrap; }
+
+  /* --- Historial (lotes y cliente) --- */
+  .hist-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #EFEEE8; font-size: 13px; font-weight: 600; flex-wrap: wrap; }
+  .hist-row:last-child { border-bottom: none; }
+  .hist-sum { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 16px; }
+  .hist-box { background: #F7F6F2; border: 1px solid #E5E3DB; border-radius: 10px; padding: 10px 12px; }
+  .hist-box .l { font-size: 11px; font-weight: 700; color: #6B6A65; text-transform: uppercase; letter-spacing: 0.04em; }
+  .hist-box .v { font-size: 17px; font-weight: 800; margin-top: 3px; }
+  .hist-list { max-height: 300px; overflow-y: auto; }
+
   @media (max-width: 640px) {
     .stats { grid-template-columns: repeat(2, 1fr); }
     .form-grid { grid-template-columns: 1fr; }
     body { padding: 14px; }
+    .search-input { min-width: 0; width: 100%; }
+    .search-wrap { width: 100%; }
   }
 </style>
 </head>
@@ -260,6 +307,8 @@
 
   <div class="main-nav">
     <button class="main-nav-btn active" id="nav-pedidos" onclick="showView('pedidos')"><i class="ti ti-truck-delivery" aria-hidden="true"></i> Pedidos</button>
+    <button class="main-nav-btn" id="nav-ruta" onclick="showView('ruta')"><i class="ti ti-route" aria-hidden="true"></i> Ruta</button>
+    <button class="main-nav-btn" id="nav-caja" onclick="showView('caja')"><i class="ti ti-cash" aria-hidden="true"></i> Caja</button>
     <button class="main-nav-btn" id="nav-precios" onclick="showView('precios')"><i class="ti ti-tag" aria-hidden="true"></i> Precios</button>
   </div>
 
@@ -269,12 +318,20 @@
 
   <div class="section-header">
     <div class="section-title"><i class="ti ti-truck-delivery" style="font-size:18px;color:#1A1A18;" aria-hidden="true"></i> Pedidos</div>
-    <div class="tabs" id="tabs">
-      <button class="tab active" onclick="setTab('todos',this)">Todos</button>
-      <button class="tab" onclick="setTab('pendiente',this)">Pendiente</button>
-      <button class="tab" onclick="setTab('en ruta',this)">En ruta</button>
-      <button class="tab" onclick="setTab('entregado',this)">Entregado</button>
-      <button class="tab" onclick="setTab('cambio',this)">Por caducar</button>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <div class="search-wrap">
+        <i class="ti ti-search" aria-hidden="true"></i>
+        <input class="search-input" id="search-input" placeholder="Buscar cliente o sabor..." autocomplete="off" oninput="onSearch()">
+        <button class="search-clear" id="search-clear" onclick="clearSearch()" style="display:none;" aria-label="Limpiar búsqueda">✕</button>
+      </div>
+      <div class="tabs" id="tabs">
+        <button class="tab active" onclick="setTab('todos',this)">Todos</button>
+        <button class="tab" onclick="setTab('pendiente',this)">Pendiente</button>
+        <button class="tab" onclick="setTab('en ruta',this)">En ruta</button>
+        <button class="tab" onclick="setTab('entregado',this)">Entregado</button>
+        <button class="tab" onclick="setTab('cambio',this)">Por caducar</button>
+        <button class="tab" onclick="setTab('deben',this)">Deben</button>
+      </div>
     </div>
   </div>
 
@@ -323,6 +380,59 @@
   </div>
   </div><!-- /view-pedidos -->
 
+  <div id="view-ruta" style="display:none;">
+    <div class="section-header">
+      <div class="section-title"><i class="ti ti-route" style="font-size:18px;color:#1A1A18;" aria-hidden="true"></i> Ruta de entregas</div>
+      <div class="tabs" id="ruta-tabs">
+        <button class="tab active" onclick="setRutaTab('hoy',this)">Para hoy</button>
+        <button class="tab" onclick="setRutaTab('todas',this)">Todas las pendientes</button>
+      </div>
+    </div>
+    <div class="ruta-toolbar">
+      <button class="btn" onclick="rutaSelectAll(true)"><i class="ti ti-checks" aria-hidden="true"></i> Seleccionar todo</button>
+      <button class="btn" onclick="rutaSelectAll(false)">Limpiar</button>
+      <button class="btn btn-primary" onclick="rutaMarkDelivered()"><i class="ti ti-check" aria-hidden="true"></i> Marcar entregados (<span id="ruta-count">0</span>)</button>
+    </div>
+    <div id="ruta-list"></div>
+  </div>
+
+  <div id="view-caja" style="display:none;">
+    <div class="section-header">
+      <div class="section-title"><i class="ti ti-cash" style="font-size:18px;color:#1A1A18;" aria-hidden="true"></i> Corte de caja</div>
+      <div class="tabs" id="caja-tabs">
+        <button class="tab" onclick="setCajaPeriod('hoy',this)">Hoy</button>
+        <button class="tab active" onclick="setCajaPeriod('semana',this)">Semana</button>
+        <button class="tab" onclick="setCajaPeriod('mes',this)">Mes</button>
+        <button class="tab" onclick="setCajaPeriod('todo',this)">Todo</button>
+      </div>
+    </div>
+    <div class="caja-grid" id="caja-stats"></div>
+
+    <div class="section-header">
+      <div class="section-title"><i class="ti ti-bottle" style="font-size:18px;color:#1A1A18;" aria-hidden="true"></i> Ventas por sabor</div>
+    </div>
+    <div class="table-card compact">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Sabor</th><th>Botellas</th><th>Importe</th></tr></thead>
+          <tbody id="caja-sabores"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title"><i class="ti ti-user-dollar" style="font-size:18px;color:#993C1D;" aria-hidden="true"></i> Clientes que deben</div>
+    </div>
+    <div class="table-card compact">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Cliente</th><th>Pedidos</th><th>Debe</th></tr></thead>
+          <tbody id="caja-deudores"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <div id="view-precios" style="display:none;">
     <div class="section-header">
       <div class="section-title"><i class="ti ti-tag" style="font-size:18px;color:#1A1A18;" aria-hidden="true"></i> Precio por botella</div>
@@ -346,6 +456,14 @@
         <button class="btn btn-primary" onclick="saveLotes()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Guardar lotes</button>
         <span id="lotes-msg" style="font-size:13px;font-weight:700;color:#3B6D11;"></span>
       </div>
+    </div>
+
+    <div class="section-header" style="margin-top:28px;">
+      <div class="section-title"><i class="ti ti-history" style="font-size:18px;color:#1A1A18;" aria-hidden="true"></i> Historial de lotes</div>
+    </div>
+    <div class="table-card" style="padding:18px;">
+      <p style="font-size:13px;color:#6B6A65;font-weight:600;margin-bottom:14px;">Cada vez que cambias la fecha de elaboración de un sabor, el lote anterior se archiva aquí con lo que se hizo y lo que se vendió. Sirve para ver cuánto rinde cada lote.</p>
+      <div id="lote-hist-list"></div>
     </div>
   </div>
 </div>
@@ -445,6 +563,18 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="hist-overlay">
+  <div class="modal" style="max-width:620px;">
+    <div class="modal-title"><i class="ti ti-user" aria-hidden="true"></i> <span id="hist-title">Cliente</span></div>
+    <div id="hist-body"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeClientHistory()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
@@ -483,6 +613,7 @@ const accessDocRef = doc(db, "config", "access");
 const pricesDocRef = doc(db, "config", "prices");
 const lotesDocRef = doc(db, "config", "lotes");
 const ticketsCol = collection(db, "ticketsQueue");
+const lotesHistCol = collection(db, "lotesHistory");
 
 window.FLAVORS = ['Piña','Jamaica','Horchata','Tamarindo','Café','Taro','Chai','Otro'];
 window.FLAVOR_CLASS = {Piña:'pina',Jamaica:'jamaica',Horchata:'horchata',Tamarindo:'tamarindo',Café:'cafe',Taro:'taro',Chai:'chai',Otro:'otro'};
@@ -491,10 +622,15 @@ window.orders = [];
 window.clients = [];
 window.prices = {};
 window.lotes = {};
+window.lotesHist = [];
 let currentTab = 'todos';
 let editId = null;
 let selectedFlavors = new Set();
 let clientListOpen = false;
+let searchQuery = '';
+let rutaTab = 'hoy';
+let rutaSel = new Set();
+let cajaPeriod = 'semana';
 
 function setConn(ok){
   const pill=document.getElementById('conn-pill');
@@ -562,11 +698,18 @@ onSnapshot(pricesDocRef, (snap)=>{
   window.prices = (snap.exists() && snap.data()) || {};
   renderPrecios();
   renderTable();
+  renderCaja();
 }, (err)=>{ console.error(err); });
 
 onSnapshot(lotesDocRef, (snap)=>{
   window.lotes = (snap.exists() && snap.data()) || {};
   renderLotes();
+  checkAlerts();
+}, (err)=>{ console.error(err); });
+
+onSnapshot(lotesHistCol, (snap)=>{
+  window.lotesHist = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  renderLoteHist();
 }, (err)=>{ console.error(err); });
 
 async function checkAccessCode(){
@@ -655,6 +798,38 @@ function loteEstado(f){
   if(rem<=Math.max(3, Math.ceil(hechas*0.15))) return 'low';
   return 'ok';
 }
+
+function toISO(d){ const m=String(d.getMonth()+1).padStart(2,'0'); const dy=String(d.getDate()).padStart(2,'0'); return `${d.getFullYear()}-${m}-${dy}`; }
+function todayISO(){ return toISO(new Date()); }
+// Escapa comillas para poder incrustar texto dentro de onclick="fn('...')"
+function jsq(s){ return String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+// Dinero efectivamente cobrado de un pedido
+function cobradoDe(o){
+  const p=o.pago||'pendiente';
+  if(p==='saldado') return orderTotal(o);
+  if(p==='abonado') return Math.min(Number(o.abono)||0, orderTotal(o));
+  return 0;
+}
+
+// Aviso flotante abajo; opcionalmente con un botón de acción (ej. "Deshacer")
+function showToast(msg, actionLabel, action, ms){
+  const wrap=document.getElementById('toast-wrap');
+  if(!wrap) return;
+  const el=document.createElement('div');
+  el.className='toast';
+  const span=document.createElement('span');
+  span.textContent=msg;
+  el.appendChild(span);
+  if(actionLabel && action){
+    const btn=document.createElement('button');
+    btn.textContent=actionLabel;
+    btn.onclick=()=>{ el.remove(); action(); };
+    el.appendChild(btn);
+  }
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.remove(); }, ms||4000);
+}
+window.showToast=showToast;
 
 const STATUS_LABEL={pendiente:'Pendiente','en ruta':'En ruta',entregado:'Entregado',cambio:'Por caducar'};
 const STATUS_COLOR={pendiente:'#E0A82E','en ruta':'#185FA5',entregado:'#3B6D11',cambio:'#C0392B'};
@@ -780,11 +955,35 @@ function renderStats(){
     </div>`).join('');
 }
 
+// Busca en nombre de cliente, teléfono y sabores del pedido
+function matchesSearch(o){
+  if(!searchQuery) return true;
+  const hay=[o.cliente||'', o.telefono||'', Object.keys(o.sabores||{}).join(' ')].join(' ').toLowerCase();
+  return hay.includes(searchQuery);
+}
+
+window.onSearch=function(){
+  searchQuery=document.getElementById('search-input').value.trim().toLowerCase();
+  document.getElementById('search-clear').style.display = searchQuery ? 'block' : 'none';
+  renderTable();
+};
+window.clearSearch=function(){
+  document.getElementById('search-input').value='';
+  searchQuery='';
+  document.getElementById('search-clear').style.display='none';
+  renderTable();
+};
+
 function renderTable(){
-  const filtered=currentTab==='todos'?orders:orders.filter(o=>o.estatus===currentTab);
+  let filtered;
+  if(currentTab==='todos') filtered=orders;
+  else if(currentTab==='deben') filtered=orders.filter(o=>saldoRestante(o)>0);
+  else filtered=orders.filter(o=>o.estatus===currentTab);
+  filtered=filtered.filter(matchesSearch);
   const tbody=document.getElementById('tbody');
   if(!filtered.length){
-    tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i><p>Sin pedidos en esta categoría</p></div></td></tr>`;
+    const msg=searchQuery?'Ningún pedido coincide con la búsqueda':'Sin pedidos en esta categoría';
+    tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i><p>${msg}</p></div></td></tr>`;
     return;
   }
   tbody.innerHTML=filtered.map(o=>{
@@ -795,7 +994,7 @@ function renderTable(){
     const tel=o.telefono?`<a class="client-phone" href="tel:${o.telefono}"><i class="ti ti-phone" style="font-size:11px;vertical-align:-1px;" aria-hidden="true"></i> ${o.telefono}</a>`:`<span class="no-phone">Sin teléfono</span>`;
     const cambioLabel=fmtDate(o.cambio)+(dl===0?' · hoy':dl<0&&dl!==null?' · vencido':isUrgent?' · urgente':'');
     return `<tr>
-      <td><div class="client-cell"><span class="client-name">${o.cliente}</span>${tel}</div></td>
+      <td><div class="client-cell"><span class="client-name linked" onclick="openClientHistory('${jsq(o.cliente)}')" title="Ver historial del cliente">${o.cliente}</span>${tel}</div></td>
       <td>${fmtDate(o.fecha)}</td>
       <td><div class="flavor-pills">${pills}</div></td>
       <td><span class="total-pzas">${totalPzas(o.sabores)}</span></td>
@@ -864,24 +1063,202 @@ function renderCaducidad(){
   </tr>`).join('');
 }
 
-function render(){ renderStats(); renderTable(); renderCaducidad(); checkCambioAlerts(); }
+function render(){ renderStats(); renderTable(); renderCaducidad(); renderRuta(); renderCaja(); checkAlerts(); }
 
-// Aviso dentro de la app cuando se acercan las fechas de cambio de aguas
+// ---------- Ruta de entregas ----------
+function rutaOrders(){
+  const hoy=todayISO();
+  let list=orders.filter(o=>o.estatus==='pendiente'||o.estatus==='en ruta');
+  // "Para hoy": lo que ya tocaba salir (fecha de pedido de hoy o anterior)
+  if(rutaTab==='hoy') list=list.filter(o=>!o.fecha||o.fecha<=hoy);
+  return list.sort((a,b)=>String(a.fecha||'').localeCompare(String(b.fecha||'')) || String(a.cliente||'').localeCompare(String(b.cliente||'')));
+}
+
+function renderRuta(){
+  const el=document.getElementById('ruta-list');
+  if(!el) return;
+  const list=rutaOrders();
+  const cnt=document.getElementById('ruta-count');
+  if(cnt) cnt.textContent=rutaSel.size;
+  if(!list.length){
+    el.innerHTML=`<div class="table-card"><div class="empty-state"><i class="ti ti-checkbox" aria-hidden="true"></i><p>${rutaTab==='hoy'?'Nada por entregar hoy':'No hay pedidos pendientes'}</p></div></div>`;
+    return;
+  }
+  const groups=[['en ruta','En camino'],['pendiente','Por salir']];
+  el.innerHTML=groups.map(([st,label])=>{
+    const g=list.filter(o=>o.estatus===st);
+    if(!g.length) return '';
+    return `<div class="ruta-group-title">${label} (${g.length})</div>` + g.map(o=>{
+      const sel=rutaSel.has(o.id);
+      const pills=Object.entries(o.sabores||{}).map(([f,q])=>`<span class="fpill ${FLAVOR_CLASS[f]||''}">${f} ${q}</span>`).join('');
+      const resta=saldoRestante(o);
+      const tel=o.telefono?` · <a class="client-phone" href="tel:${o.telefono}" onclick="event.stopPropagation()"><i class="ti ti-phone" style="font-size:11px;" aria-hidden="true"></i> ${o.telefono}</a>`:'';
+      return `<div class="ruta-card ${sel?'sel':''}" onclick="toggleRutaSel('${o.id}')">
+        <input type="checkbox" class="ruta-check" ${sel?'checked':''} onclick="event.stopPropagation();toggleRutaSel('${o.id}')" aria-label="Seleccionar pedido">
+        <div class="ruta-body">
+          <div class="ruta-cliente">${o.cliente}</div>
+          <div class="ruta-meta">${fmtDate(o.fecha)} · ${totalPzas(o.sabores||{})} pzas${tel}</div>
+          <div class="ruta-pills">${pills}</div>
+        </div>
+        <div class="ruta-right">${fmtMoney(orderTotal(o))}${resta>0?`<div class="resta-val">Debe ${fmtMoney(resta)}</div>`:''}</div>
+      </div>`;
+    }).join('');
+  }).join('');
+}
+
+window.toggleRutaSel=function(id){ if(rutaSel.has(id)) rutaSel.delete(id); else rutaSel.add(id); renderRuta(); };
+window.rutaSelectAll=function(on){ rutaSel.clear(); if(on) rutaOrders().forEach(o=>rutaSel.add(o.id)); renderRuta(); };
+window.rutaMarkDelivered=async function(){
+  if(!rutaSel.size){ alert('Selecciona al menos un pedido de la lista.'); return; }
+  const ids=[...rutaSel];
+  if(!confirm(`¿Marcar ${ids.length} pedido(s) como entregados?`)) return;
+  // Guarda el estatus anterior de cada uno para poder deshacer
+  const prev=ids.map(id=>{ const o=orders.find(x=>x.id===id); return {id, estatus:(o&&o.estatus)||'pendiente'}; });
+  try{
+    await Promise.all(ids.map(id=>persistOrderUpdate(id,{estatus:'entregado'})));
+    rutaSel.clear();
+    renderRuta();
+    showToast(`${ids.length} pedido(s) entregados`, 'Deshacer', async ()=>{
+      try{ await Promise.all(prev.map(p=>persistOrderUpdate(p.id,{estatus:p.estatus}))); showToast('Cambio revertido'); }
+      catch(e){ console.error(e); alert('No se pudo revertir.'); }
+    }, 9000);
+  }catch(e){ console.error(e); alert('No se pudo actualizar. Revisa tu conexión.'); }
+};
+
+// ---------- Corte de caja ----------
+function periodStart(p){
+  const d=new Date(); d.setHours(0,0,0,0);
+  if(p==='hoy') return toISO(d);
+  if(p==='semana'){ const dow=(d.getDay()+6)%7; d.setDate(d.getDate()-dow); return toISO(d); } // desde el lunes
+  if(p==='mes'){ d.setDate(1); return toISO(d); }
+  return '';
+}
+function cajaOrders(){
+  const start=periodStart(cajaPeriod);
+  return start ? orders.filter(o=>o.fecha && o.fecha>=start) : orders.slice();
+}
+
+function renderCaja(){
+  const statsEl=document.getElementById('caja-stats');
+  if(!statsEl) return;
+  const list=cajaOrders();
+  const vendido=list.reduce((s,o)=>s+orderTotal(o),0);
+  const cobrado=list.reduce((s,o)=>s+cobradoDe(o),0);
+  const porCobrar=list.reduce((s,o)=>s+saldoRestante(o),0);
+  const pzas=list.reduce((s,o)=>s+totalPzas(o.sabores||{}),0);
+  const cards=[
+    {l:'Pedidos', v:list.length, c:''},
+    {l:'Botellas', v:pzas, c:''},
+    {l:'Vendido', v:fmtMoney(vendido), c:''},
+    {l:'Cobrado', v:fmtMoney(cobrado), c:'in'},
+    {l:'Por cobrar', v:fmtMoney(porCobrar), c:'out'}
+  ];
+  statsEl.innerHTML=cards.map(c=>`<div class="caja-card"><div class="caja-label">${c.l}</div><div class="caja-val ${c.c}">${c.v}</div></div>`).join('');
+
+  const porSabor={};
+  list.forEach(o=>Object.entries(o.sabores||{}).forEach(([f,q])=>{
+    if(!porSabor[f]) porSabor[f]={q:0,m:0};
+    porSabor[f].q+=q;
+    porSabor[f].m+=q*priceOf(f,o.nivel);
+  }));
+  const sab=Object.entries(porSabor).sort((a,b)=>b[1].m-a[1].m);
+  const sabEl=document.getElementById('caja-sabores');
+  if(sabEl) sabEl.innerHTML = sab.length
+    ? sab.map(([f,d])=>`<tr><td><span class="fpill ${FLAVOR_CLASS[f]||''}">${f}</span></td><td><span class="total-pzas">${d.q}</span></td><td><span class="importe-val">${fmtMoney(d.m)}</span></td></tr>`).join('')
+    : `<tr><td colspan="3"><div class="empty-state"><i class="ti ti-bottle-off" aria-hidden="true"></i><p>Sin ventas en este periodo</p></div></td></tr>`;
+
+  // Deudores: sobre todos los pedidos, no solo el periodo
+  const deuda={};
+  orders.forEach(o=>{ const r=saldoRestante(o); if(r>0){ if(!deuda[o.cliente]) deuda[o.cliente]={n:0,m:0}; deuda[o.cliente].n++; deuda[o.cliente].m+=r; } });
+  const deu=Object.entries(deuda).sort((a,b)=>b[1].m-a[1].m);
+  const deuEl=document.getElementById('caja-deudores');
+  if(deuEl) deuEl.innerHTML = deu.length
+    ? deu.map(([n,d])=>`<tr><td><span class="client-name linked" onclick="openClientHistory('${jsq(n)}')">${n}</span></td><td>${d.n}</td><td><span class="importe-val" style="color:#993C1D;">${fmtMoney(d.m)}</span></td></tr>`).join('')
+    : `<tr><td colspan="3"><div class="empty-state"><i class="ti ti-mood-check" aria-hidden="true"></i><p>Nadie debe, todo cobrado</p></div></td></tr>`;
+}
+
+// ---------- Historial por cliente ----------
+window.openClientHistory=function(name){
+  closeAllKebabs();
+  const cl=clients.find(c=>c.name===name);
+  const list=orders.filter(o=>o.cliente===name).sort((a,b)=>String(b.fecha||'').localeCompare(String(a.fecha||'')));
+  const comprado=list.reduce((s,o)=>s+orderTotal(o),0);
+  const debe=list.reduce((s,o)=>s+saldoRestante(o),0);
+  const pzas=list.reduce((s,o)=>s+totalPzas(o.sabores||{}),0);
+  const nombres=nivelNombres();
+  const nivel=(cl&&cl.nivel)||1;
+  document.getElementById('hist-title').textContent=name;
+  const tel=(cl&&cl.phone)
+    ? `<a class="client-phone" href="tel:${cl.phone}"><i class="ti ti-phone" style="font-size:12px;" aria-hidden="true"></i> ${cl.phone}</a>`
+    : '<span class="no-phone">Sin teléfono</span>';
+  const rows=list.length ? list.map(o=>{
+    const r=saldoRestante(o);
+    const pills=Object.entries(o.sabores||{}).map(([f,q])=>`<span class="fpill ${FLAVOR_CLASS[f]||''}">${f} ${q}</span>`).join(' ');
+    return `<div class="hist-row">
+      <span style="min-width:0;">${fmtDate(o.fecha)} ${pills}</span>
+      <span>${fmtMoney(orderTotal(o))}${r>0?` <span class="resta-val">· debe ${fmtMoney(r)}</span>`:''}</span>
+    </div>`;
+  }).join('') : '<div class="empty-state" style="padding:1.5rem;"><p>Sin pedidos registrados</p></div>';
+
+  document.getElementById('hist-body').innerHTML=`
+    <div style="margin-bottom:14px;font-size:13px;font-weight:600;">${tel} · Nivel de precio: <b>${nombres[nivel-1]}</b></div>
+    <div class="hist-sum">
+      <div class="hist-box"><div class="l">Pedidos</div><div class="v">${list.length}</div></div>
+      <div class="hist-box"><div class="l">Botellas</div><div class="v">${pzas}</div></div>
+      <div class="hist-box"><div class="l">Comprado</div><div class="v">${fmtMoney(comprado)}</div></div>
+      <div class="hist-box"><div class="l">Debe</div><div class="v" style="color:${debe>0?'#993C1D':'#3B6D11'};">${fmtMoney(debe)}</div></div>
+    </div>
+    <div class="form-section-label">Historial de pedidos</div>
+    <div class="hist-list">${rows}</div>`;
+  document.getElementById('hist-overlay').classList.add('open');
+};
+window.closeClientHistory=function(){ document.getElementById('hist-overlay').classList.remove('open'); };
+
+// ---------- Historial de lotes ----------
+function renderLoteHist(){
+  const el=document.getElementById('lote-hist-list');
+  if(!el) return;
+  const list=[...lotesHist].sort((a,b)=>String(b.cerrado||'').localeCompare(String(a.cerrado||'')));
+  if(!list.length){ el.innerHTML='<div class="empty-state" style="padding:1.5rem;"><i class="ti ti-archive" aria-hidden="true"></i><p>Aún no hay lotes archivados</p></div>'; return; }
+  el.innerHTML=list.slice(0,60).map(h=>{
+    const hechas=Number(h.hechas)||0, vend=Number(h.vendidas)||0;
+    const sobro=Math.max(hechas-vend,0);
+    return `<div class="hist-row">
+      <span><span class="fpill ${FLAVOR_CLASS[h.sabor]||''}">${h.sabor}</span> <span style="color:#6B6A65;">elab. ${fmtDate(h.elab)}</span></span>
+      <span style="color:#6B6A65;">Hechas ${hechas} · Vendidas ${vend} · Sobró ${sobro}</span>
+    </div>`;
+  }).join('');
+}
+
+// ---------- Avisos dentro de la app ----------
 let alertedIds = new Set();
+let alertedStock = new Set();
 let bannerDismissed = false;
 window.dismissCambioBanner=function(){ bannerDismissed=true; const b=document.getElementById('cambio-banner'); if(b) b.style.display='none'; };
-function checkCambioAlerts(){
+function checkAlerts(){
   const banner=document.getElementById('cambio-banner');
   if(!banner) return;
   const soon=orders.filter(o=>{ const dl=daysLeft(o.cambio); return dl!==null && dl<=3 && o.estatus!=='entregado'; })
     .sort((a,b)=>(daysLeft(a.cambio))-(daysLeft(b.cambio)));
-  if(!soon.length){ banner.style.display='none'; bannerDismissed=false; return; }
+  const bajos=FLAVORS.filter(f=>{ const e=loteEstado(f); return e==='low'||e==='out'; });
+
+  if(!soon.length && !bajos.length){ banner.style.display='none'; bannerDismissed=false; return; }
+
   if(!bannerDismissed){
+    let html='';
+    if(soon.length){
+      html+=`<div class="banner-title"><i class="ti ti-bell-ringing" aria-hidden="true"></i> ${soon.length} pedido(s) con cambio de aguas próximo</div>`;
+      html+=soon.map(o=>{ const dl=daysLeft(o.cambio); const tag=dl<0?'vencido':dl===0?'hoy':dl+'d'; return `<div>• <b>${o.cliente}</b> — cambiar antes de ${fmtDate(o.cambio)} <span style="opacity:.8;">(${tag})</span></div>`; }).join('');
+    }
+    if(bajos.length){
+      html+=`<div class="banner-title" style="margin-top:${soon.length?'12px':'0'};"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Existencias por terminarse</div>`;
+      html+=bajos.map(f=>{ const rem=remainingFor(f); return `<div>• <b>${f}</b> — ${rem<=0?'agotado':'quedan '+rem}</div>`; }).join('');
+    }
+    banner.innerHTML=html+`<button class="banner-close" onclick="dismissCambioBanner()" aria-label="Cerrar">✕</button>`;
     banner.style.display='block';
-    const items=soon.map(o=>{ const dl=daysLeft(o.cambio); const tag=dl<0?'vencido':dl===0?'hoy':dl+'d'; return `<div>• <b>${o.cliente}</b> — cambiar antes de ${fmtDate(o.cambio)} <span style="opacity:.8;">(${tag})</span></div>`; }).join('');
-    banner.innerHTML=`<div class="banner-title"><i class="ti ti-bell-ringing" aria-hidden="true"></i> ${soon.length} pedido(s) con cambio de aguas próximo</div>${items}<button class="banner-close" onclick="dismissCambioBanner()" aria-label="Cerrar">✕</button>`;
   }
-  // Notificación del sistema, una vez por pedido por sesión
+
+  // Notificación del sistema, una vez por pedido/sabor por sesión
   if('Notification' in window && Notification.permission==='granted'){
     soon.forEach(o=>{
       if(alertedIds.has(o.id)) return;
@@ -889,15 +1266,26 @@ function checkCambioAlerts(){
       const dl=daysLeft(o.cambio);
       try{ new Notification('Cambio de aguas próximo', { body:`${o.cliente}: cambiar antes de ${fmtDate(o.cambio)}${dl<0?' (vencido)':dl===0?' (hoy)':' ('+dl+' días)'}`, icon:'icon-192.png' }); }catch(e){}
     });
+    bajos.forEach(f=>{
+      const key=f+':'+loteEstado(f);
+      if(alertedStock.has(key)) return;
+      alertedStock.add(key);
+      const rem=remainingFor(f);
+      try{ new Notification('Existencias bajas', { body:`${f}: ${rem<=0?'agotado':'quedan '+rem+' botellas'}`, icon:'icon-192.png' }); }catch(e){}
+    });
   }
 }
 
 window.showView=function(view){
-  document.getElementById('view-pedidos').style.display = view==='pedidos' ? 'block' : 'none';
-  document.getElementById('view-precios').style.display = view==='precios' ? 'block' : 'none';
-  document.getElementById('nav-pedidos').classList.toggle('active', view==='pedidos');
-  document.getElementById('nav-precios').classList.toggle('active', view==='precios');
-  if(view==='precios'){ renderPrecios(); renderLotes(); }
+  ['pedidos','ruta','caja','precios'].forEach(v=>{
+    const el=document.getElementById('view-'+v);
+    if(el) el.style.display = (v===view) ? 'block' : 'none';
+    const nav=document.getElementById('nav-'+v);
+    if(nav) nav.classList.toggle('active', v===view);
+  });
+  if(view==='precios'){ renderPrecios(); renderLotes(); renderLoteHist(); }
+  if(view==='ruta') renderRuta();
+  if(view==='caja') renderCaja();
 };
 
 function renderLotes(){
@@ -934,18 +1322,34 @@ window.updateLotePreview=function(f){
 
 window.saveLotes=async function(){
   const payload={};
+  const toArchive=[];
   FLAVORS.forEach(f=>{
     const elab=document.getElementById('lote-elab-'+f).value||'';
     const sem=parseInt(document.getElementById('lote-sem-'+f).value)||0;
     const hechas=parseInt(document.getElementById('lote-hechas-'+f).value)||0;
     payload[f]={elab, semanas:sem, hechas};
+    // Si el sabor ya tenía lote y cambió la fecha de elaboración, archiva el anterior.
+    // consumedFor() se calcula aquí, antes de guardar, para que use el lote viejo.
+    const prev=lotes[f];
+    if(prev && prev.elab && elab && prev.elab!==elab){
+      toArchive.push({
+        sabor:f,
+        elab:prev.elab,
+        semanas:Number(prev.semanas)||0,
+        hechas:Number(prev.hechas)||0,
+        vendidas:consumedFor(f),
+        cerrado:todayISO(),
+        created:serverTimestamp()
+      });
+    }
   });
   const msg=document.getElementById('lotes-msg');
   msg.style.color='#3B6D11';
   try{
+    if(toArchive.length) await Promise.all(toArchive.map(a=>addDoc(lotesHistCol,a)));
     await setDoc(lotesDocRef, payload);
-    msg.textContent='✓ Lotes guardados';
-    setTimeout(()=>{ msg.textContent=''; },2500);
+    msg.textContent=toArchive.length?`✓ Lotes guardados · ${toArchive.length} archivado(s)`:'✓ Lotes guardados';
+    setTimeout(()=>{ msg.textContent=''; },2800);
   }catch(e){
     console.error(e);
     msg.style.color='#C0392B';
@@ -997,7 +1401,9 @@ window.savePrices=async function(){
     msg.textContent='No se pudo guardar. Revisa tu conexión.';
   }
 };
-window.setTab=function(tab,el){ currentTab=tab; document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); renderTable(); };
+window.setTab=function(tab,el){ currentTab=tab; document.querySelectorAll('#tabs .tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); renderTable(); };
+window.setRutaTab=function(t,el){ rutaTab=t; document.querySelectorAll('#ruta-tabs .tab').forEach(x=>x.classList.remove('active')); el.classList.add('active'); rutaSel.clear(); renderRuta(); };
+window.setCajaPeriod=function(p,el){ cajaPeriod=p; document.querySelectorAll('#caja-tabs .tab').forEach(x=>x.classList.remove('active')); el.classList.add('active'); renderCaja(); };
 
 function buildClientList(filter=''){
   const list=document.getElementById('client-list');
@@ -1114,6 +1520,11 @@ window.saveOrder=async function(){
   selectedFlavors.forEach(f=>{ const v=parseInt(document.getElementById('qty-'+f)?.value)||0; if(v>0) sabores[f]=v; });
   if(!Object.keys(sabores).length){ alert('Agrega al menos un sabor con piezas.'); return; }
   if(pago==='abonado' && abono<=0){ alert('Escribe el monto abonado.'); return; }
+  if(elab && cambio && cambio<elab){ alert('La fecha de cambio no puede ser anterior a la de elaboración.'); return; }
+  if(cambio){
+    const dl=daysLeft(cambio);
+    if(dl!==null && dl<0 && !confirm(`Ojo: la fecha de cambio (${fmtDate(cambio)}) ya pasó. ¿Guardar de todos modos?`)) return;
+  }
   try{
     const existingClient=clients.find(c=>c.name===cliente);
     if(!existingClient){
@@ -1150,9 +1561,20 @@ window.saveOrder=async function(){
 };
 
 window.deleteOrder=async function(id){
+  const o=orders.find(x=>x.id===id);
+  if(!o) return;
   if(!confirm('¿Eliminar este pedido?')) return;
-  try{ await persistOrderDelete(id); }
-  catch(e){ console.error(e); alert('No se pudo eliminar. Revisa tu conexión.'); }
+  closeAllKebabs();
+  // Copia sin el id, para poder recrearlo si el usuario deshace
+  const backup={...o};
+  delete backup.id;
+  try{
+    await persistOrderDelete(id);
+    showToast(`Pedido de ${o.cliente} eliminado`, 'Deshacer', async ()=>{
+      try{ await persistOrderNew(backup); showToast('Pedido restaurado'); }
+      catch(e){ console.error(e); alert('No se pudo restaurar el pedido.'); }
+    }, 10000);
+  }catch(e){ console.error(e); alert('No se pudo eliminar. Revisa tu conexión.'); }
 };
 
 window.exportPDF=function(){
