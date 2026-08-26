@@ -585,6 +585,14 @@ import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/fireb
 
 const VAPID_KEY = "BEJm4aVSkUMdvwc5eHLdGaayMcCvnt4hVoatcaqdAfgjt9oz0sAyyZhA6zKz4Cwb9qRDZ0OuYwURBr4Uu1QhIaA";
 
+// ============================================================
+// ACCESO SIN CÓDIGO (temporal, para el pitch)
+// Pausado el 2026-08-25. Reactivar después del pitch (~2026-09-01)
+// poniendo esta línea en: const LOGIN_ENABLED = true;
+// Con false, cualquiera con el link entra sin código y puede ver/usar la app.
+// ============================================================
+const LOGIN_ENABLED = false;
+
 const firebaseConfig = {
   apiKey: "AIzaSyCjFyxrJsrcJx5QmHaL0p_eQaSB83PpaS4",
   authDomain: "emboobate-cd9c1.firebaseapp.com",
@@ -743,7 +751,15 @@ function grantAccess(code){
 }
 window.checkAccessCode = checkAccessCode;
 
-(function tryAutoLogin(){
+(function bootAccess(){
+  // Login pausado para el pitch: mostrar la app directo, sin pedir código.
+  if(!LOGIN_ENABLED){
+    document.getElementById('gate-overlay').style.display='none';
+    document.getElementById('app-container').style.display='block';
+    updateNotifBtn();
+    return;
+  }
+  // Login activo: si ya había código guardado en este dispositivo, entra solo.
   const saved = localStorage.getItem('embobate_access_code');
   if(saved){
     getDoc(accessDocRef).then(snap=>{
