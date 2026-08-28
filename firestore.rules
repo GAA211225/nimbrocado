@@ -1,0 +1,102 @@
+rules_version = '2';
+
+// Reglas de Firestore para Emboobate.
+//
+// La app hoy NO usa Firebase Auth (el "código de acceso" es solo una
+// comparación en el navegador), así que estas reglas no pueden distinguir
+// "quién" escribe. Lo que sí hacen es validar la FORMA de los datos, para
+// que un script o petición fuera de la app no pueda meter basura, borrar
+// documentos completos de golpe, o escribir campos arbitrarios.
+//
+// Cuando se reactive el login con Firebase Anonymous Auth (ver charla del
+// lunes), cambiar cada "allow read, write" por condiciones que exijan
+// request.auth != null, y borrar los comentarios de este archivo.
+
+function isString(v) { return v is string; }
+function isNumber(v) { return v is int || v is float; }
+function isOptionalString(v) { return v == null || v is string; }
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- Pedidos ----
+    match /orders/{orderId} {
+      allow read: if true;
+      allow create, update: if
+        isString(request.resource.data.cliente) &&
+        request.resource.data.cliente.size() > 0 &&
+        isOptionalString(request.resource.data.telefono) &&
+        isString(request.resource.data.fecha) &&
+        request.resource.data.estatus in ['pendiente', 'en ruta', 'entregado', 'cambio'] &&
+        request.resource.data.pago in ['pendiente', 'abonado', 'saldado'] &&
+        isNumber(request.resource.data.abono) &&
+        request.resource.data.sabores is map &&
+        request.resource.data.sabores.size() > 0;
+      allow delete: if true;
+    }
+
+    // ---- Clientes ----
+    match /clients/{clientId} {
+      allow read: if true;
+      allow create, update: if
+        isString(request.resource.data.name) &&
+        request.resource.data.name.size() > 0 &&
+        isOptionalString(request.resource.data.phone);
+      allow delete: if true;
+    }
+
+    // ---- Configuración (código de acceso, precios, lotes) ----
+    match /config/access {
+      allow read: if true;
+      // Solo se permite crear el código si aún no existe (primer uso).
+      // Una vez creado, cambiarlo debe hacerse desde la consola de Firebase.
+      allow create: if !exists(/databases/$(database)/documents/config/access) &&
+        isString(request.resource.data.code) && request.resource.data.code.size() > 0;
+      allow update, delete: if false;
+    }
+
+    match /config/prices {
+      allow read: if true;
+      allow write: if request.resource.data.keys().hasOnly(['aguas', 'cafe', 'taro', 'chai', 'otro']);
+    }
+
+    match /config/lotes {
+      allow read, write: if true;
+    }
+
+    // ---- Historial de lotes ----
+    match /lotesHistory/{docId} {
+      allow read: if true;
+      allow create: if
+        isString(request.resource.data.sabor) &&
+        isString(request.resource.data.elab) &&
+        isNumber(request.resource.data.hechas) &&
+        isNumber(request.resource.data.vendidas);
+      allow update, delete: if false; // el historial no se edita, solo se archiva
+    }
+
+    // ---- Cola de tickets para WhatsApp ----
+    match /ticketsQueue/{docId} {
+      allow read: if true;
+      allow create: if
+        isString(request.resource.data.orderId) &&
+        isString(request.resource.data.cliente) &&
+        isString(request.resource.data.telefono) &&
+        request.resource.data.status == 'pending';
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);
+      allow delete: if false;
+    }
+
+    // ---- Tokens de notificaciones push ----
+    match /fcmTokens/{tokenId} {
+      allow read: if false; // nadie necesita leer esta colección desde el cliente
+      allow write: if isString(request.resource.data.token) && request.resource.data.token == tokenId;
+      allow delete: if true;
+    }
+
+    // Cualquier otra ruta: bloqueada por default.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
