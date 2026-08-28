@@ -228,6 +228,17 @@
   .ruta-body { flex: 1; min-width: 0; }
   .ruta-cliente { font-weight: 800; font-size: 14px; }
   .ruta-meta { font-size: 12px; color: #6B6A65; font-weight: 600; margin-top: 2px; }
+  .ruta-dir { font-size: 12px; color: #1A1A18; font-weight: 600; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+  .ruta-dir.sin-dir { color: #9C9A91; font-style: italic; }
+  .mapa-origen-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .mapa-origen-row .form-input { flex: 1; min-width: 220px; }
+  .mapa-status { font-size: 13px; font-weight: 600; margin-top: 10px; color: #6B6A65; }
+  .mapa-status.err { color: #C0392B; }
+  .mapa-status.warn { color: #854F0B; }
+  .mapa-box { width: 100%; height: 380px; border-radius: 10px; margin-top: 12px; overflow: hidden; border: 1px solid #E5E3DB; }
+  .mapa-orden { margin-top: 14px; padding-left: 20px; font-size: 13px; font-weight: 600; }
+  .mapa-orden li { padding: 4px 0; }
+  .mapa-orden:empty { margin-top: 0; }
   .ruta-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
   .ruta-right { text-align: right; flex-shrink: 0; font-weight: 800; font-size: 14px; }
 
@@ -382,6 +393,19 @@
       <button class="btn" onclick="rutaSelectAll(false)">Limpiar</button>
       <button class="btn btn-primary" onclick="rutaMarkDelivered()"><i class="ti ti-check" aria-hidden="true"></i> Marcar entregados (<span id="ruta-count">0</span>)</button>
     </div>
+
+    <div class="table-card" style="padding:18px;margin-bottom:20px;">
+      <div class="section-title" style="margin-bottom:12px;"><i class="ti ti-map-2" style="font-size:18px;color:#1A1A18;" aria-hidden="true"></i> Mapa de ruta</div>
+      <div class="mapa-origen-row">
+        <input class="form-input" id="ruta-origen" placeholder="Dirección de salida (tu negocio)">
+        <button class="btn" onclick="saveRutaOrigen()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Guardar</button>
+        <button class="btn btn-primary" onclick="buildRutaMap()"><i class="ti ti-route-2" aria-hidden="true"></i> Optimizar y ver en mapa</button>
+      </div>
+      <div id="ruta-map-status" class="mapa-status"></div>
+      <div id="ruta-map" class="mapa-box" style="display:none;"></div>
+      <ol id="ruta-map-order" class="mapa-orden"></ol>
+    </div>
+
     <div id="ruta-list"></div>
   </div>
 
@@ -479,6 +503,10 @@
           <input class="form-input" id="f-telefono" type="tel" placeholder="Ej. 492 123 4567">
         </div>
       </div>
+      <div class="form-field" style="margin-top:12px;">
+        <label class="form-label">Dirección de entrega</label>
+        <input class="form-input" id="f-direccion" placeholder="Calle, número, colonia, referencia...">
+      </div>
     </div>
 
     <div class="form-section">
@@ -571,6 +599,16 @@ import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/fireb
 const VAPID_KEY = "BEJm4aVSkUMdvwc5eHLdGaayMcCvnt4hVoatcaqdAfgjt9oz0sAyyZhA6zKz4Cwb9qRDZ0OuYwURBr4Uu1QhIaA";
 
 // ============================================================
+// Mapa de ruta (Google Maps). Consigue una API key en
+// https://console.cloud.google.com/google/maps-apis con las APIs
+// "Maps JavaScript API", "Geocoding API" y "Directions API"
+// habilitadas, y restríngela por "referente HTTP" a tu dominio
+// (https://gaa211225.github.io/*) para que nadie más la use.
+// Mientras diga "TU_API_KEY_AQUI", el botón del mapa avisa que falta.
+// ============================================================
+const GOOGLE_MAPS_API_KEY = "TU_API_KEY_AQUI";
+
+// ============================================================
 // ACCESO SIN CÓDIGO (temporal, para el pitch)
 // Pausado el 2026-08-25. Reactivar después del pitch (~2026-09-01)
 // poniendo esta línea en: const LOGIN_ENABLED = true;
@@ -605,6 +643,7 @@ const clientsCol = collection(db, "clients");
 const accessDocRef = doc(db, "config", "access");
 const pricesDocRef = doc(db, "config", "prices");
 const lotesDocRef = doc(db, "config", "lotes");
+const rutaConfigDocRef = doc(db, "config", "ruta");
 const ticketsCol = collection(db, "ticketsQueue");
 const lotesHistCol = collection(db, "lotesHistory");
 
@@ -702,6 +741,12 @@ onSnapshot(lotesDocRef, (snap)=>{
   window.lotes = (snap.exists() && snap.data()) || {};
   renderLotes();
   checkAlerts();
+}, (err)=>{ console.error(err); });
+
+onSnapshot(rutaConfigDocRef, (snap)=>{
+  window.rutaOrigen = (snap.exists() && snap.data().origen) || '';
+  const el=document.getElementById('ruta-origen');
+  if(el && document.activeElement!==el) el.value=window.rutaOrigen;
 }, (err)=>{ console.error(err); });
 
 onSnapshot(lotesHistCol, (snap)=>{
@@ -1092,11 +1137,13 @@ function renderRuta(){
       const pills=Object.entries(o.sabores||{}).map(([f,q])=>`<span class="fpill ${FLAVOR_CLASS[f]||''}">${f} ${q}</span>`).join('');
       const resta=saldoRestante(o);
       const tel=o.telefono?` · <a class="client-phone" href="tel:${o.telefono}" onclick="event.stopPropagation()"><i class="ti ti-phone" style="font-size:11px;" aria-hidden="true"></i> ${o.telefono}</a>`:'';
+      const dir=o.direccion?`<div class="ruta-dir"><i class="ti ti-map-pin" style="font-size:11px;" aria-hidden="true"></i> ${o.direccion}</div>`:`<div class="ruta-dir sin-dir">Sin dirección registrada</div>`;
       return `<div class="ruta-card ${sel?'sel':''}" onclick="toggleRutaSel('${o.id}')">
         <input type="checkbox" class="ruta-check" ${sel?'checked':''} onclick="event.stopPropagation();toggleRutaSel('${o.id}')" aria-label="Seleccionar pedido">
         <div class="ruta-body">
           <div class="ruta-cliente">${o.cliente}</div>
           <div class="ruta-meta">${fmtDate(o.fecha)} · ${totalPzas(o.sabores||{})} pzas${tel}</div>
+          ${dir}
           <div class="ruta-pills">${pills}</div>
         </div>
         <div class="ruta-right">${fmtMoney(orderTotal(o))}${resta>0?`<div class="resta-val">Debe ${fmtMoney(resta)}</div>`:''}</div>
@@ -1122,6 +1169,101 @@ window.rutaMarkDelivered=async function(){
       catch(e){ console.error(e); alert('No se pudo revertir.'); }
     }, 9000);
   }catch(e){ console.error(e); alert('No se pudo actualizar. Revisa tu conexión.'); }
+};
+
+// ---------- Mapa de ruta (Google Maps) ----------
+window.saveRutaOrigen=async function(){
+  const val=document.getElementById('ruta-origen').value.trim();
+  try{ await setDoc(rutaConfigDocRef, {origen: val}); }
+  catch(e){ console.error(e); alert('No se pudo guardar la dirección de salida. Revisa tu conexión.'); }
+};
+
+let googleMapsPromise=null;
+function loadGoogleMaps(){
+  if(window.google && window.google.maps) return Promise.resolve();
+  if(googleMapsPromise) return googleMapsPromise;
+  googleMapsPromise=new Promise((resolve,reject)=>{
+    if(!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY==='TU_API_KEY_AQUI'){ reject(new Error('missing_key')); return; }
+    const s=document.createElement('script');
+    s.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(GOOGLE_MAPS_API_KEY)}`;
+    s.async=true;
+    s.onload=()=>resolve();
+    s.onerror=()=>reject(new Error('load_error'));
+    document.head.appendChild(s);
+  });
+  return googleMapsPromise;
+}
+
+function geocodeAddress(geocoder, address){
+  return new Promise((resolve)=>{
+    geocoder.geocode({address}, (results, status)=>{
+      if(status==='OK' && results && results[0]) resolve(results[0].geometry.location);
+      else resolve(null);
+    });
+  });
+}
+
+let rutaMap=null, rutaDirRenderer=null;
+window.buildRutaMap=async function(){
+  const statusEl=document.getElementById('ruta-map-status');
+  const mapEl=document.getElementById('ruta-map');
+  const orderEl=document.getElementById('ruta-map-order');
+  statusEl.className='mapa-status'; orderEl.innerHTML=''; mapEl.style.display='none';
+
+  const origen=document.getElementById('ruta-origen').value.trim();
+  if(!origen){ statusEl.className='mapa-status err'; statusEl.textContent='Primero escribe y guarda la dirección de salida.'; return; }
+
+  const stops=rutaOrders().filter(o=>o.direccion && o.direccion.trim());
+  if(!stops.length){ statusEl.className='mapa-status warn'; statusEl.textContent='Ningún pedido de esta lista tiene dirección registrada.'; return; }
+
+  statusEl.textContent='Cargando mapa...';
+  try{ await loadGoogleMaps(); }
+  catch(e){
+    statusEl.className='mapa-status err';
+    statusEl.textContent = e.message==='missing_key'
+      ? 'Falta configurar la API key de Google Maps (GOOGLE_MAPS_API_KEY en el código).'
+      : 'No se pudo cargar Google Maps. Revisa tu conexión o la API key.';
+    return;
+  }
+
+  statusEl.textContent='Ubicando direcciones...';
+  const geocoder=new google.maps.Geocoder();
+  const origenPos=await geocodeAddress(geocoder, origen);
+  if(!origenPos){ statusEl.className='mapa-status err'; statusEl.textContent='No se pudo ubicar la dirección de salida. Revísala.'; return; }
+
+  const geocoded=await Promise.all(stops.map(o=>geocodeAddress(geocoder, o.direccion)));
+  const validStops=[]; const fallidos=[];
+  stops.forEach((o,i)=>{ if(geocoded[i]) validStops.push({order:o, pos:geocoded[i]}); else fallidos.push(o.cliente); });
+
+  if(!validStops.length){ statusEl.className='mapa-status err'; statusEl.textContent='Ninguna dirección se pudo ubicar en el mapa.'; return; }
+
+  const directionsService=new google.maps.DirectionsService();
+  directionsService.route({
+    origin: origenPos,
+    destination: origenPos,
+    waypoints: validStops.map(v=>({location:v.pos, stopover:true})),
+    optimizeWaypoints: true,
+    travelMode: google.maps.TravelMode.DRIVING
+  }, (result, status)=>{
+    if(status!=='OK'){
+      statusEl.className='mapa-status err';
+      statusEl.textContent='No se pudo calcular la ruta ('+status+').';
+      return;
+    }
+    mapEl.style.display='block';
+    if(!rutaMap){
+      rutaMap=new google.maps.Map(mapEl, {center:origenPos, zoom:12});
+      rutaDirRenderer=new google.maps.DirectionsRenderer({map:rutaMap});
+    }
+    rutaDirRenderer.setDirections(result);
+
+    const order=result.routes[0].waypoint_order;
+    let km=0, seg=0;
+    result.routes[0].legs.forEach(l=>{ km+=l.distance.value; seg+=l.duration.value; });
+    statusEl.className='mapa-status';
+    statusEl.textContent = `Ruta optimizada: ${(km/1000).toFixed(1)} km · ~${Math.round(seg/60)} min` + (fallidos.length ? ` · sin ubicar: ${fallidos.join(', ')}` : '');
+    orderEl.innerHTML = order.map((idx,i)=>`<li>${validStops[idx].order.cliente} — ${validStops[idx].order.direccion}</li>`).join('');
+  });
 };
 
 // ---------- Corte de caja ----------
@@ -1393,9 +1535,9 @@ function buildClientList(filter=''){
   const list=document.getElementById('client-list');
   const q=filter.trim().toUpperCase();
   const filtered=clients.filter(c=>!q||c.name.includes(q));
-  let html=filtered.map(c=>`<div class="client-option" onclick="selectClient('${c.name.replace(/'/g,"\\'")}','${(c.phone||'').replace(/'/g,"\\'")}')"><i class="ti ti-user" style="font-size:14px;color:#6B6A65;" aria-hidden="true"></i>${c.name}</div>`).join('');
+  let html=filtered.map(c=>`<div class="client-option" onclick="selectClient('${c.name.replace(/'/g,"\\'")}','${(c.phone||'').replace(/'/g,"\\'")}','${(c.direccion||'').replace(/'/g,"\\'")}')"><i class="ti ti-user" style="font-size:14px;color:#6B6A65;" aria-hidden="true"></i>${c.name}</div>`).join('');
   if(q&&!clients.some(c=>c.name===q)){
-    html+=`<div class="client-option new-opt" onclick="selectClient('${q.replace(/'/g,"\\'")}','')"><i class="ti ti-plus" style="font-size:14px;" aria-hidden="true"></i>Agregar "${q}" como nuevo cliente</div>`;
+    html+=`<div class="client-option new-opt" onclick="selectClient('${q.replace(/'/g,"\\'")}','','')"><i class="ti ti-plus" style="font-size:14px;" aria-hidden="true"></i>Agregar "${q}" como nuevo cliente</div>`;
   }
   list.innerHTML=html||`<div class="client-option" style="color:#6B6A65;">Sin resultados</div>`;
 }
@@ -1404,7 +1546,7 @@ window.openClientList=function(){ clientListOpen=true; buildClientList(document.
 window.closeClientList=function(){ clientListOpen=false; document.getElementById('client-list').classList.remove('open'); };
 window.toggleClientList=function(){ if(clientListOpen) closeClientList(); else openClientList(); };
 window.filterClients=function(){ buildClientList(document.getElementById('f-cliente-text').value); if(!clientListOpen) openClientList(); };
-window.selectClient=function(name, phone){ document.getElementById('f-cliente-text').value=name; if(phone) document.getElementById('f-telefono').value=phone; updateFormTotals(); closeClientList(); };
+window.selectClient=function(name, phone, direccion){ document.getElementById('f-cliente-text').value=name; if(phone) document.getElementById('f-telefono').value=phone; if(direccion) document.getElementById('f-direccion').value=direccion; updateFormTotals(); closeClientList(); };
 
 document.addEventListener('click',function(e){
   const wrap=document.getElementById('client-wrap');
@@ -1447,6 +1589,7 @@ window.openModal=function(id=null){
   document.getElementById('modal-title-text').textContent=id?'Editar pedido':'Nuevo pedido';
   document.getElementById('f-cliente-text').value='';
   document.getElementById('f-telefono').value='';
+  document.getElementById('f-direccion').value='';
   document.getElementById('f-fecha-pedido').value=new Date().toISOString().split('T')[0];
   document.getElementById('f-estatus').value='pendiente';
   document.getElementById('f-pago').value='pendiente';
@@ -1458,6 +1601,7 @@ window.openModal=function(id=null){
     if(o){
       document.getElementById('f-cliente-text').value=o.cliente;
       document.getElementById('f-telefono').value=o.telefono||'';
+      document.getElementById('f-direccion').value=o.direccion||'';
       document.getElementById('f-fecha-pedido').value=o.fecha;
       document.getElementById('f-estatus').value=o.estatus;
       document.getElementById('f-pago').value=o.pago||'pendiente';
@@ -1482,6 +1626,7 @@ window.saveOrder=async function(){
   const cliente=document.getElementById('f-cliente-text').value.trim().toUpperCase();
   if(!cliente){ alert('Escribe o selecciona un cliente.'); return; }
   const telefono=document.getElementById('f-telefono').value.trim();
+  const direccion=document.getElementById('f-direccion').value.trim();
   const fecha=document.getElementById('f-fecha-pedido').value;
   const estatus=document.getElementById('f-estatus').value;
   const pago=document.getElementById('f-pago').value;
@@ -1500,14 +1645,15 @@ window.saveOrder=async function(){
   try{
     const existingClient=clients.find(c=>c.name===cliente);
     if(!existingClient){
-      await persistClientNew({name:cliente, phone:telefono});
+      await persistClientNew({name:cliente, phone:telefono, direccion});
     } else {
       const upd={};
       if(telefono && telefono!==existingClient.phone) upd.phone=telefono;
+      if(direccion && direccion!==existingClient.direccion) upd.direccion=direccion;
       if(Object.keys(upd).length) await persistClientUpdate(existingClient.id, upd);
     }
 
-    const payload={cliente,telefono,fecha,sabores,estatus,pago,abono,elab,cambio};
+    const payload={cliente,telefono,direccion,fecha,sabores,estatus,pago,abono,elab,cambio};
     if(editId){
       await persistOrderUpdate(editId, payload);
     } else {

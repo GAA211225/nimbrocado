@@ -64,6 +64,11 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    match /config/ruta {
+      allow read: if true;
+      allow write: if request.resource.data.keys().hasOnly(['origen']) && isString(request.resource.data.origen);
+    }
+
     // ---- Historial de lotes ----
     match /lotesHistory/{docId} {
       allow read: if true;
