@@ -725,6 +725,14 @@
             <option value="cambio">Por caducar / cambio</option>
           </select>
         </div>
+        <div class="form-field">
+          <label class="form-label">Hora de entrega</label>
+          <input class="form-input" type="time" id="f-hora">
+        </div>
+      </div>
+      <div class="form-field" style="margin-top:12px;">
+        <label class="form-label">Nota</label>
+        <input class="form-input" id="f-nota" placeholder="Dato extra: referencia, indicaciones, etc.">
       </div>
       <div class="form-field" style="margin-top:12px;">
         <label class="form-label">Sabores</label>
@@ -1792,6 +1800,8 @@ window.openModal=function(id=null){
   document.getElementById('f-direccion').value='';
   document.getElementById('f-fecha-pedido').value=new Date().toISOString().split('T')[0];
   document.getElementById('f-estatus').value='pendiente';
+  document.getElementById('f-hora').value='';
+  document.getElementById('f-nota').value='';
   document.getElementById('f-pago').value='pendiente';
   document.getElementById('f-abono').value='';
   document.getElementById('f-elab').value='';
@@ -1804,6 +1814,8 @@ window.openModal=function(id=null){
       document.getElementById('f-direccion').value=o.direccion||'';
       document.getElementById('f-fecha-pedido').value=o.fecha;
       document.getElementById('f-estatus').value=o.estatus;
+      document.getElementById('f-hora').value=o.hora||'';
+      document.getElementById('f-nota').value=o.nota||'';
       document.getElementById('f-pago').value=o.pago||'pendiente';
       document.getElementById('f-abono').value=o.abono||'';
       document.getElementById('f-elab').value=o.elab||'';
@@ -1829,6 +1841,8 @@ window.saveOrder=async function(){
   const direccion=document.getElementById('f-direccion').value.trim();
   const fecha=document.getElementById('f-fecha-pedido').value;
   const estatus=document.getElementById('f-estatus').value;
+  const hora=document.getElementById('f-hora').value;
+  const nota=document.getElementById('f-nota').value.trim();
   const pago=document.getElementById('f-pago').value;
   const abono=pago==='abonado' ? (parseFloat(document.getElementById('f-abono').value)||0) : 0;
   const elab=document.getElementById('f-elab').value;
@@ -1853,7 +1867,7 @@ window.saveOrder=async function(){
       if(Object.keys(upd).length) await persistClientUpdate(existingClient.id, upd);
     }
 
-    const payload={cliente,telefono,direccion,fecha,sabores,estatus,pago,abono,elab,cambio};
+    const payload={cliente,telefono,direccion,fecha,hora,nota,sabores,estatus,pago,abono,elab,cambio};
     if(editId){
       await persistOrderUpdate(editId, payload);
     } else {
