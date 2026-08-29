@@ -271,6 +271,99 @@
     .search-input { min-width: 0; width: 100%; }
     .search-wrap { width: 100%; }
   }
+
+  /* ==========================================================
+     NEUMORFISMO (versión de prueba) — botones suaves tipo relieve.
+     Para revertir: borra TODO este bloque hasta el comentario de cierre.
+     ========================================================== */
+  :root{
+    --neu-bg:#F4F3EF;
+    --neu-dark:#ceccc2;
+    --neu-light:#ffffff;
+  }
+  /* Botones de acción (Nuevo pedido, Exportar, Activar avisos, Guardar, Cancelar) */
+  .btn{
+    background:var(--neu-bg);
+    color:#1A1A18;
+    border:none;
+    border-radius:12px;
+    box-shadow:5px 5px 11px var(--neu-dark), -5px -5px 11px var(--neu-light);
+    transition:box-shadow .18s ease, transform .06s ease, background .18s ease;
+  }
+  .btn:hover{
+    background:var(--neu-bg);
+    border:none;
+    box-shadow:6px 6px 14px var(--neu-dark), -6px -6px 14px var(--neu-light);
+    transform:translateY(-1px);
+  }
+  .btn:active{
+    transform:translateY(0);
+    box-shadow:inset 4px 4px 9px var(--neu-dark), inset -4px -4px 9px var(--neu-light);
+  }
+  .btn-primary{
+    background:#1A1A18;
+    color:#fff;
+    border:none;
+    box-shadow:5px 5px 11px var(--neu-dark), -5px -5px 11px var(--neu-light);
+  }
+  .btn-primary:hover{
+    background:#1A1A18;
+    border:none;
+    box-shadow:6px 6px 14px var(--neu-dark), -6px -6px 14px var(--neu-light);
+    transform:translateY(-1px);
+  }
+  .btn-primary:active{
+    transform:translateY(0);
+    box-shadow:inset 3px 3px 8px rgba(0,0,0,0.55), inset -2px -2px 6px rgba(255,255,255,0.10);
+  }
+
+  /* Sub-pestañas (Todos, Pendiente, En ruta…): la barra es un hueco y la activa sobresale */
+  .tabs{
+    background:var(--neu-bg);
+    border-radius:16px;
+    box-shadow:inset 3px 3px 7px var(--neu-dark), inset -3px -3px 7px var(--neu-light);
+  }
+  .tab{ background:transparent; box-shadow:none; border:none; }
+  .tab:hover{ color:#1A1A18; }
+  .tab.active{
+    background:var(--neu-bg);
+    color:#1A1A18;
+    box-shadow:3px 3px 7px var(--neu-dark), -3px -3px 7px var(--neu-light);
+  }
+
+  /* Chips de sabores: relieve; seleccionado = hundido */
+  .flavor-opt{
+    background:var(--neu-bg);
+    border:none;
+    color:#6B6A65;
+    box-shadow:4px 4px 9px var(--neu-dark), -4px -4px 9px var(--neu-light);
+  }
+  .flavor-opt:hover{
+    border:none;
+    box-shadow:5px 5px 11px var(--neu-dark), -5px -5px 11px var(--neu-light);
+  }
+  .flavor-opt.checked{
+    background:#EAE8E0;
+    color:#1A1A18;
+    border:none;
+    box-shadow:inset 3px 3px 6px #c7c5bb, inset -3px -3px 6px #ffffff;
+  }
+
+  /* Botón de tres puntos (opciones del pedido) */
+  .kebab-btn{
+    background:var(--neu-bg);
+    border:none;
+    box-shadow:3px 3px 7px var(--neu-dark), -3px -3px 7px var(--neu-light);
+  }
+  .kebab-btn:hover{
+    background:var(--neu-bg);
+    border:none;
+    box-shadow:4px 4px 9px var(--neu-dark), -4px -4px 9px var(--neu-light);
+  }
+  .kebab-btn:active{
+    box-shadow:inset 2px 2px 5px var(--neu-dark), inset -2px -2px 5px var(--neu-light);
+  }
+  /* ===== FIN NEUMORFISMO ===== */
 </style>
 </head>
 <body>
