@@ -1,4 +1,4 @@
-const CACHE_NAME = 'emboobate-cache-v30';
+const CACHE_NAME = 'emboobate-cache-v31';
 // Service worker propio de Embobate (separado de dieta/rutinas desde 2026-07-07).
 const ASSETS = [
   './embobate.html',
