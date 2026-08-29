@@ -416,6 +416,51 @@
     box-shadow:inset 2px 2px 5px var(--neu-dark), inset -2px -2px 5px var(--neu-light);
   }
   /* ===== FIN NEUMORFISMO ===== */
+
+  /* ===== Frases motivacionales =====
+     Teléfono / pantallas angostas: tarjeta debajo del logo.
+     Laptop ancha (>=1480px): panel fijo en la columna derecha. */
+  .quote-panel{
+    display:block;
+    background:#F4F3EF;
+    border-radius:18px;
+    padding:15px 18px;
+    margin:0 0 22px;
+    box-shadow:6px 6px 14px #ceccc2, -6px -6px 14px #ffffff;
+    cursor:pointer;
+    user-select:none;
+  }
+  @media (min-width:1480px){
+    .quote-panel{
+      position:fixed;
+      top:50%;
+      right:24px;
+      transform:translateY(-50%);
+      width:min(300px, calc((100vw - 1100px)/2 - 40px));
+      margin:0;
+      padding:24px 24px 22px;
+      border-radius:22px;
+      box-shadow:9px 9px 20px #ceccc2, -9px -9px 20px #ffffff;
+      z-index:40;
+    }
+  }
+  .quote-mark{ display:none; font-family:Georgia, "Times New Roman", serif; font-size:54px; line-height:0.1; color:#d3d0c6; height:26px; }
+  @media (min-width:1480px){ .quote-mark{ display:block; } }
+  .quote-inner{ transition:opacity .35s ease; }
+  .quote-inner.quote-fade{ opacity:0; }
+  .quote-cat{ display:inline-block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; padding:4px 11px; border-radius:20px; margin-bottom:10px; }
+  .quote-cat.resiliencia{ background:#FAECE7; color:#993C1D; }
+  .quote-cat.motivacion{ background:#FAEEDA; color:#854F0B; }
+  .quote-cat.equipo{ background:#E6F1FB; color:#185FA5; }
+  .quote-text{ font-size:15px; font-weight:700; line-height:1.45; color:#1A1A18; margin-bottom:8px; }
+  .quote-author{ font-size:12.5px; font-weight:700; color:#6B6A65; }
+  .quote-hint{ margin-top:12px; font-size:10px; font-weight:700; color:#B5B3AA; display:flex; align-items:center; gap:5px; text-transform:uppercase; letter-spacing:0.04em; }
+  @media (min-width:1480px){
+    .quote-text{ font-size:16.5px; line-height:1.5; margin-bottom:14px; }
+    .quote-author{ font-size:13px; }
+    .quote-cat{ margin-bottom:13px; }
+    .quote-hint{ margin-top:18px; }
+  }
 </style>
 </head>
 <body>
@@ -449,6 +494,16 @@
       <button class="btn btn-primary" onclick="openModal()"><i class="ti ti-plus" aria-hidden="true"></i> Nuevo pedido</button>
     </div>
   </div>
+
+  <aside class="quote-panel" id="quote-panel" title="Toca para otra frase">
+    <span class="quote-mark">&ldquo;</span>
+    <div class="quote-inner" id="quote-inner">
+      <span class="quote-cat resiliencia" id="quote-cat">Resiliencia</span>
+      <p class="quote-text" id="quote-text"></p>
+      <p class="quote-author" id="quote-author"></p>
+    </div>
+    <div class="quote-hint"><i class="ti ti-refresh" aria-hidden="true"></i> Toca para otra</div>
+  </aside>
 
   <div class="main-nav">
     <button class="main-nav-btn active" id="nav-pedidos" onclick="showView('pedidos')"><i class="ti ti-truck-delivery" aria-hidden="true"></i> Pedidos</button>
@@ -1938,6 +1993,55 @@ window.resendTicket=async function(id){
     alert('No se pudo encolar el ticket. Revisa tu conexión.');
   }
 };
+
+// ---------- Frases motivacionales (panel derecho en pantallas anchas) ----------
+const QUOTES=[
+  {c:'resiliencia', t:'Nuestra mayor gloria no está en no caer nunca, sino en levantarnos cada vez que caemos.', a:'Confucio'},
+  {c:'resiliencia', t:'Cae siete veces y levántate ocho.', a:'Proverbio japonés'},
+  {c:'resiliencia', t:'El éxito es ir de fracaso en fracaso sin perder el entusiasmo.', a:'Winston Churchill'},
+  {c:'resiliencia', t:'En medio de la dificultad reside la oportunidad.', a:'Albert Einstein'},
+  {c:'resiliencia', t:'Nunca, nunca, nunca te rindas.', a:'Winston Churchill'},
+  {c:'resiliencia', t:'Lo que no me mata, me hace más fuerte.', a:'Friedrich Nietzsche'},
+  {c:'resiliencia', t:'La adversidad despierta talentos que en la prosperidad habrían dormido.', a:'Horacio'},
+  {c:'motivacion', t:'El único modo de hacer un gran trabajo es amar lo que haces.', a:'Steve Jobs'},
+  {c:'motivacion', t:'Tanto si crees que puedes como si crees que no, estás en lo cierto.', a:'Henry Ford'},
+  {c:'motivacion', t:'El futuro pertenece a quienes creen en la belleza de sus sueños.', a:'Eleanor Roosevelt'},
+  {c:'motivacion', t:'No cuentes los días; haz que los días cuenten.', a:'Muhammad Ali'},
+  {c:'motivacion', t:'La mejor manera de predecir el futuro es crearlo.', a:'Peter Drucker'},
+  {c:'motivacion', t:'Un viaje de mil millas comienza con un solo paso.', a:'Lao Tsé'},
+  {c:'motivacion', t:'Empieza donde estás, usa lo que tienes, haz lo que puedas.', a:'Arthur Ashe'},
+  {c:'equipo', t:'Si quieres llegar rápido, ve solo; si quieres llegar lejos, ve acompañado.', a:'Proverbio africano'},
+  {c:'equipo', t:'Solos podemos hacer tan poco; juntos, tanto.', a:'Helen Keller'},
+  {c:'equipo', t:'Reunirse es un comienzo; seguir juntos, un progreso; trabajar juntos, un éxito.', a:'Henry Ford'},
+  {c:'equipo', t:'El talento gana partidos, pero el trabajo en equipo gana campeonatos.', a:'Michael Jordan'},
+  {c:'equipo', t:'Ninguno de nosotros es tan inteligente como todos nosotros juntos.', a:'Ken Blanchard'},
+];
+const QCAT_LABEL={resiliencia:'Resiliencia', motivacion:'Motivación', equipo:'Trabajo en equipo'};
+let qOrder=[], qPos=0, qTimer=null;
+function qShuffle(){ qOrder=[...QUOTES.keys()]; for(let i=qOrder.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [qOrder[i],qOrder[j]]=[qOrder[j],qOrder[i]]; } qPos=0; }
+function applyQuote(q){
+  const cat=document.getElementById('quote-cat');
+  cat.className='quote-cat '+q.c; cat.textContent=QCAT_LABEL[q.c];
+  document.getElementById('quote-text').textContent='“'+q.t+'”';
+  document.getElementById('quote-author').textContent='— '+q.a;
+}
+window.nextQuote=function(immediate){
+  if(!document.getElementById('quote-panel')) return;
+  if(!qOrder.length || qPos>=qOrder.length) qShuffle();
+  const q=QUOTES[qOrder[qPos++]];
+  const inner=document.getElementById('quote-inner');
+  if(immediate){ applyQuote(q); return; }
+  inner.classList.add('quote-fade');
+  setTimeout(()=>{ applyQuote(q); inner.classList.remove('quote-fade'); }, 350);
+};
+function restartQuoteTimer(){ if(qTimer) clearInterval(qTimer); qTimer=setInterval(()=>window.nextQuote(), 14000); }
+(function initQuotes(){
+  const panel=document.getElementById('quote-panel');
+  if(!panel) return;
+  window.nextQuote(true);            // primera frase sin parpadeo
+  restartQuoteTimer();
+  panel.addEventListener('click', ()=>{ window.nextQuote(); restartQuoteTimer(); });
+})();
 
 window.render=render;
 render();
