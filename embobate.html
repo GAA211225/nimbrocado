@@ -270,6 +270,196 @@
     body { padding: 14px; }
     .search-input { min-width: 0; width: 100%; }
     .search-wrap { width: 100%; }
+
+    /* Tablas anchas -> tarjetas apiladas en el celular (nada se pierde de lado) */
+    table.cards-mobile { min-width: 0; }
+    table.cards-mobile thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    table.cards-mobile, table.cards-mobile tbody { display: block; width: 100%; }
+    table.cards-mobile tr {
+      display: block;
+      background: #fff;
+      border: 1px solid #ECEAE3;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    table.cards-mobile td {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border: none;
+      border-bottom: 1px solid #F4F3EF;
+      padding: 9px 13px;
+      text-align: right;
+    }
+    table.cards-mobile tr td:last-child { border-bottom: none; }
+    table.cards-mobile td::before {
+      content: attr(data-label);
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #6B6A65;
+      text-align: left;
+    }
+    /* El cliente va como encabezado de la tarjeta */
+    table.cards-mobile td[data-label="Cliente"] {
+      justify-content: flex-start;
+      text-align: left;
+      background: #FBFAF7 !important;
+      border-bottom: 1px solid #EFEEE8;
+      padding: 12px 13px;
+    }
+    table.cards-mobile td[data-label="Cliente"]::before { display: none; }
+    table.cards-mobile td[data-label="Sabores"] .flavor-pills { justify-content: flex-end; }
+    table.cards-mobile tbody tr:hover td { background: #fff; }
+    table.cards-mobile tbody tr:hover td[data-label="Cliente"] { background: #FBFAF7; }
+    /* Estado vacío ocupa la tarjeta completa */
+    table.cards-mobile td[colspan] { display: block; text-align: center; border: none; }
+    table.cards-mobile td[colspan]::before { display: none; }
+
+    /* Caja: tablas compactas caben sin scroll lateral */
+    .table-card.compact table { min-width: 0; }
+  }
+
+  /* ==========================================================
+     NEUMORFISMO (versión de prueba) — botones suaves tipo relieve.
+     Para revertir: borra TODO este bloque hasta el comentario de cierre.
+     ========================================================== */
+  :root{
+    --neu-bg:#F4F3EF;
+    --neu-dark:#ceccc2;
+    --neu-light:#ffffff;
+  }
+  /* Botones de acción (Nuevo pedido, Exportar, Activar avisos, Guardar, Cancelar) */
+  .btn{
+    background:var(--neu-bg);
+    color:#1A1A18;
+    border:none;
+    border-radius:12px;
+    box-shadow:5px 5px 11px var(--neu-dark), -5px -5px 11px var(--neu-light);
+    transition:box-shadow .18s ease, transform .06s ease, background .18s ease;
+  }
+  .btn:hover{
+    background:var(--neu-bg);
+    border:none;
+    box-shadow:6px 6px 14px var(--neu-dark), -6px -6px 14px var(--neu-light);
+    transform:translateY(-1px);
+  }
+  .btn:active{
+    transform:translateY(0);
+    box-shadow:inset 4px 4px 9px var(--neu-dark), inset -4px -4px 9px var(--neu-light);
+  }
+  .btn-primary{
+    background:#1A1A18;
+    color:#fff;
+    border:none;
+    box-shadow:5px 5px 11px var(--neu-dark), -5px -5px 11px var(--neu-light);
+  }
+  .btn-primary:hover{
+    background:#1A1A18;
+    border:none;
+    box-shadow:6px 6px 14px var(--neu-dark), -6px -6px 14px var(--neu-light);
+    transform:translateY(-1px);
+  }
+  .btn-primary:active{
+    transform:translateY(0);
+    box-shadow:inset 3px 3px 8px rgba(0,0,0,0.55), inset -2px -2px 6px rgba(255,255,255,0.10);
+  }
+
+  /* Sub-pestañas (Todos, Pendiente, En ruta…): la barra es un hueco y la activa sobresale */
+  .tabs{
+    background:var(--neu-bg);
+    border-radius:16px;
+    box-shadow:inset 3px 3px 7px var(--neu-dark), inset -3px -3px 7px var(--neu-light);
+  }
+  .tab{ background:transparent; box-shadow:none; border:none; }
+  .tab:hover{ color:#1A1A18; }
+  .tab.active{
+    background:var(--neu-bg);
+    color:#1A1A18;
+    box-shadow:3px 3px 7px var(--neu-dark), -3px -3px 7px var(--neu-light);
+  }
+
+  /* Chips de sabores: relieve; seleccionado = hundido */
+  .flavor-opt{
+    background:var(--neu-bg);
+    border:none;
+    color:#6B6A65;
+    box-shadow:4px 4px 9px var(--neu-dark), -4px -4px 9px var(--neu-light);
+  }
+  .flavor-opt:hover{
+    border:none;
+    box-shadow:5px 5px 11px var(--neu-dark), -5px -5px 11px var(--neu-light);
+  }
+  .flavor-opt.checked{
+    background:#EAE8E0;
+    color:#1A1A18;
+    border:none;
+    box-shadow:inset 3px 3px 6px #c7c5bb, inset -3px -3px 6px #ffffff;
+  }
+
+  /* Botón de tres puntos (opciones del pedido) */
+  .kebab-btn{
+    background:var(--neu-bg);
+    border:none;
+    box-shadow:3px 3px 7px var(--neu-dark), -3px -3px 7px var(--neu-light);
+  }
+  .kebab-btn:hover{
+    background:var(--neu-bg);
+    border:none;
+    box-shadow:4px 4px 9px var(--neu-dark), -4px -4px 9px var(--neu-light);
+  }
+  .kebab-btn:active{
+    box-shadow:inset 2px 2px 5px var(--neu-dark), inset -2px -2px 5px var(--neu-light);
+  }
+  /* ===== FIN NEUMORFISMO ===== */
+
+  /* ===== Frases motivacionales =====
+     Teléfono / pantallas angostas: tarjeta debajo del logo.
+     Laptop ancha (>=1480px): panel fijo en la columna derecha. */
+  .quote-panel{
+    display:block;
+    background:#F4F3EF;
+    border-radius:18px;
+    padding:15px 18px;
+    margin:0 0 22px;
+    box-shadow:6px 6px 14px #ceccc2, -6px -6px 14px #ffffff;
+    cursor:pointer;
+    user-select:none;
+  }
+  @media (min-width:1480px){
+    .quote-panel{
+      position:fixed;
+      top:50%;
+      right:24px;
+      transform:translateY(-50%);
+      width:min(300px, calc((100vw - 1100px)/2 - 40px));
+      margin:0;
+      padding:24px 24px 22px;
+      border-radius:22px;
+      box-shadow:9px 9px 20px #ceccc2, -9px -9px 20px #ffffff;
+      z-index:40;
+    }
+  }
+  .quote-mark{ display:none; font-family:Georgia, "Times New Roman", serif; font-size:54px; line-height:0.1; color:#d3d0c6; height:26px; }
+  @media (min-width:1480px){ .quote-mark{ display:block; } }
+  .quote-inner{ transition:opacity .35s ease; }
+  .quote-inner.quote-fade{ opacity:0; }
+  .quote-cat{ display:inline-block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; padding:4px 11px; border-radius:20px; margin-bottom:10px; }
+  .quote-cat.resiliencia{ background:#FAECE7; color:#993C1D; }
+  .quote-cat.motivacion{ background:#FAEEDA; color:#854F0B; }
+  .quote-cat.equipo{ background:#E6F1FB; color:#185FA5; }
+  .quote-text{ font-size:15px; font-weight:700; line-height:1.45; color:#1A1A18; margin-bottom:8px; }
+  .quote-author{ font-size:12.5px; font-weight:700; color:#6B6A65; }
+  .quote-hint{ margin-top:12px; font-size:10px; font-weight:700; color:#B5B3AA; display:flex; align-items:center; gap:5px; text-transform:uppercase; letter-spacing:0.04em; }
+  @media (min-width:1480px){
+    .quote-text{ font-size:16.5px; line-height:1.5; margin-bottom:14px; }
+    .quote-author{ font-size:13px; }
+    .quote-cat{ margin-bottom:13px; }
+    .quote-hint{ margin-top:18px; }
   }
 </style>
 </head>
@@ -305,6 +495,16 @@
     </div>
   </div>
 
+  <aside class="quote-panel" id="quote-panel" title="Toca para otra frase">
+    <span class="quote-mark">&ldquo;</span>
+    <div class="quote-inner" id="quote-inner">
+      <span class="quote-cat resiliencia" id="quote-cat">Resiliencia</span>
+      <p class="quote-text" id="quote-text"></p>
+      <p class="quote-author" id="quote-author"></p>
+    </div>
+    <div class="quote-hint"><i class="ti ti-refresh" aria-hidden="true"></i> Toca para otra</div>
+  </aside>
+
   <div class="main-nav">
     <button class="main-nav-btn active" id="nav-pedidos" onclick="showView('pedidos')"><i class="ti ti-truck-delivery" aria-hidden="true"></i> Pedidos</button>
     <button class="main-nav-btn" id="nav-ruta" onclick="showView('ruta')"><i class="ti ti-route" aria-hidden="true"></i> Ruta</button>
@@ -337,7 +537,7 @@
 
   <div class="table-card">
     <div class="table-wrap">
-      <table>
+      <table class="cards-mobile">
         <thead>
           <tr>
             <th>Cliente</th>
@@ -362,7 +562,7 @@
   </div>
   <div class="table-card">
     <div class="table-wrap">
-      <table>
+      <table class="cards-mobile">
         <thead>
           <tr>
             <th>Cliente</th>
@@ -525,6 +725,14 @@
             <option value="cambio">Por caducar / cambio</option>
           </select>
         </div>
+        <div class="form-field">
+          <label class="form-label">Hora de entrega</label>
+          <input class="form-input" type="time" id="f-hora">
+        </div>
+      </div>
+      <div class="form-field" style="margin-top:12px;">
+        <label class="form-label">Nota</label>
+        <input class="form-input" id="f-nota" placeholder="Dato extra: referencia, indicaciones, etc.">
       </div>
       <div class="form-field" style="margin-top:12px;">
         <label class="form-label">Sabores</label>
@@ -1041,16 +1249,16 @@ function renderTable(){
     const tel=o.telefono?`<a class="client-phone" href="tel:${o.telefono}"><i class="ti ti-phone" style="font-size:11px;vertical-align:-1px;" aria-hidden="true"></i> ${o.telefono}</a>`:`<span class="no-phone">Sin teléfono</span>`;
     const cambioLabel=fmtDate(o.cambio)+(dl===0?' · hoy':dl<0&&dl!==null?' · vencido':isUrgent?' · urgente':'');
     return `<tr>
-      <td><div class="client-cell"><span class="client-name linked" onclick="openClientHistory('${jsq(o.cliente)}')" title="Ver historial del cliente">${o.cliente}</span>${tel}</div></td>
-      <td>${fmtDate(o.fecha)}</td>
-      <td><div class="flavor-pills">${pills}</div></td>
-      <td><span class="total-pzas">${totalPzas(o.sabores)}</span></td>
-      <td><span class="importe-val">${fmtMoney(orderTotal(o))}</span></td>
-      <td>${statusBadge(o.estatus)}</td>
-      <td>${pagoBadge(o)}</td>
-      <td>${fmtDate(o.elab)}</td>
-      <td class="${cc}">${cambioLabel}</td>
-      <td>
+      <td data-label="Cliente"><div class="client-cell"><span class="client-name linked" onclick="openClientHistory('${jsq(o.cliente)}')" title="Ver historial del cliente">${o.cliente}</span>${tel}</div></td>
+      <td data-label="Fecha">${fmtDate(o.fecha)}</td>
+      <td data-label="Sabores"><div class="flavor-pills">${pills}</div></td>
+      <td data-label="Piezas"><span class="total-pzas">${totalPzas(o.sabores)}</span></td>
+      <td data-label="Importe"><span class="importe-val">${fmtMoney(orderTotal(o))}</span></td>
+      <td data-label="Estatus">${statusBadge(o.estatus)}</td>
+      <td data-label="Pago">${pagoBadge(o)}</td>
+      <td data-label="Elaboración">${fmtDate(o.elab)}</td>
+      <td data-label="Cambio" class="${cc}">${cambioLabel}</td>
+      <td data-label="Opciones">
         <div class="kebab-wrap">
           <button class="icon-btn kebab-btn" onclick="toggleKebab(event,'${o.id}')" title="Opciones" aria-label="Opciones del pedido"><svg width="22" height="22" viewBox="0 0 20 20" fill="#1A1A18" aria-hidden="true"><circle cx="10" cy="4" r="1.9"/><circle cx="10" cy="10" r="1.9"/><circle cx="10" cy="16" r="1.9"/></svg></button>
           <div class="kebab-menu" id="kebab-${o.id}">
@@ -1067,7 +1275,7 @@ function renderTable(){
               </button>`).join('')}
             <div class="kebab-divider"></div>
             <button class="kebab-item" onclick="downloadTicket('${o.id}')"><i class="ti ti-receipt" aria-hidden="true"></i> Descargar ticket (PDF)</button>
-            <button class="kebab-item" onclick="resendTicket('${o.id}')"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Reenviar ticket por WhatsApp</button>
+            <button class="kebab-item" onclick="resendTicket('${o.id}')"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Enviar recibo por WhatsApp</button>
             <div class="kebab-divider"></div>
             <button class="kebab-item" onclick="openEdit('${o.id}')"><i class="ti ti-edit" aria-hidden="true"></i> Editar pedido</button>
             <button class="kebab-item danger" onclick="deleteOrder('${o.id}')"><i class="ti ti-trash" aria-hidden="true"></i> Eliminar pedido</button>
@@ -1100,13 +1308,13 @@ function renderCaducidad(){
   }
   const badgeMap={urgente:'badge-cambio',proximo:'badge-pendiente',ok:'badge-entregado'};
   tbody.innerHTML=rows.map(r=>`<tr>
-    <td style="font-weight:700;">${r.cliente}</td>
-    <td><span class="fpill ${FLAVOR_CLASS[r.sabor]||''}">${r.sabor}</span></td>
-    <td>${r.qty}</td>
-    <td>${fmtDate(r.elab)}</td>
-    <td>${fmtDate(r.cambio)}</td>
-    <td><span class="days-pill"><span class="dot dot-${r.cls}"></span>${r.dl!==null?(r.dl<0?Math.abs(r.dl)+'d vencido':r.dl===0?'Hoy':r.dl+'d'):'—'}</span></td>
-    <td><span class="badge ${badgeMap[r.cls]}">${r.estado}</span></td>
+    <td data-label="Cliente" style="font-weight:700;">${r.cliente}</td>
+    <td data-label="Sabor"><span class="fpill ${FLAVOR_CLASS[r.sabor]||''}">${r.sabor}</span></td>
+    <td data-label="Piezas">${r.qty}</td>
+    <td data-label="Elaboración">${fmtDate(r.elab)}</td>
+    <td data-label="Cambio">${fmtDate(r.cambio)}</td>
+    <td data-label="Días restantes"><span class="days-pill"><span class="dot dot-${r.cls}"></span>${r.dl!==null?(r.dl<0?Math.abs(r.dl)+'d vencido':r.dl===0?'Hoy':r.dl+'d'):'—'}</span></td>
+    <td data-label="Estado"><span class="badge ${badgeMap[r.cls]}">${r.estado}</span></td>
   </tr>`).join('');
 }
 
@@ -1595,6 +1803,8 @@ window.openModal=function(id=null){
   document.getElementById('f-direccion').value='';
   document.getElementById('f-fecha-pedido').value=new Date().toISOString().split('T')[0];
   document.getElementById('f-estatus').value='pendiente';
+  document.getElementById('f-hora').value='';
+  document.getElementById('f-nota').value='';
   document.getElementById('f-pago').value='pendiente';
   document.getElementById('f-abono').value='';
   document.getElementById('f-elab').value='';
@@ -1607,6 +1817,8 @@ window.openModal=function(id=null){
       document.getElementById('f-direccion').value=o.direccion||'';
       document.getElementById('f-fecha-pedido').value=o.fecha;
       document.getElementById('f-estatus').value=o.estatus;
+      document.getElementById('f-hora').value=o.hora||'';
+      document.getElementById('f-nota').value=o.nota||'';
       document.getElementById('f-pago').value=o.pago||'pendiente';
       document.getElementById('f-abono').value=o.abono||'';
       document.getElementById('f-elab').value=o.elab||'';
@@ -1632,6 +1844,8 @@ window.saveOrder=async function(){
   const direccion=document.getElementById('f-direccion').value.trim();
   const fecha=document.getElementById('f-fecha-pedido').value;
   const estatus=document.getElementById('f-estatus').value;
+  const hora=document.getElementById('f-hora').value;
+  const nota=document.getElementById('f-nota').value.trim();
   const pago=document.getElementById('f-pago').value;
   const abono=pago==='abonado' ? (parseFloat(document.getElementById('f-abono').value)||0) : 0;
   const elab=document.getElementById('f-elab').value;
@@ -1656,21 +1870,13 @@ window.saveOrder=async function(){
       if(Object.keys(upd).length) await persistClientUpdate(existingClient.id, upd);
     }
 
-    const payload={cliente,telefono,direccion,fecha,sabores,estatus,pago,abono,elab,cambio};
+    const payload={cliente,telefono,direccion,fecha,hora,nota,sabores,estatus,pago,abono,elab,cambio};
     if(editId){
       await persistOrderUpdate(editId, payload);
     } else {
-      const ref=await persistOrderNew(payload);
-      if(telefono){
-        const total=orderTotal(payload);
-        const resta=saldoRestante(payload);
-        await persistTicketQueue({
-          orderId: ref.id, cliente, telefono,
-          items: Object.entries(sabores).map(([f,q])=>`${f} x${q}`).join(', '),
-          total, pago, abono, resta,
-          status: 'pending', created: serverTimestamp()
-        }).catch(e=>console.warn('No se pudo encolar el ticket (se reintentará offline):', e));
-      }
+      // El recibo NO se envía solo: sale cuando tú lo revisas y tocas
+      // "Enviar recibo por WhatsApp" en el menú del pedido (chequeo humano).
+      await persistOrderNew(payload);
     }
 
     closeModal();
@@ -1780,7 +1986,9 @@ window.downloadTicket=function(id){
 window.resendTicket=async function(id){
   const o=orders.find(x=>x.id===id);
   if(!o){ alert('Pedido no encontrado.'); return; }
-  if(!o.telefono){ alert('Este pedido no tiene teléfono registrado.'); return; }
+  if(!o.telefono){ alert('Este pedido no tiene teléfono registrado. Agrégalo antes de enviar el recibo.'); return; }
+  if(!confirm(`¿Enviar el recibo por WhatsApp a ${o.cliente} (${o.telefono})?`)) return;
+  closeAllKebabs();
   try{
     const total=orderTotal(o);
     const resta=saldoRestante(o);
@@ -1790,12 +1998,61 @@ window.resendTicket=async function(id){
       total, pago:o.pago||'pendiente', abono:o.abono||0, resta,
       status:'pending', created:serverTimestamp()
     });
-    alert('Ticket encolado. Se enviará por WhatsApp en cuanto haya conexión.');
+    showToast(`Recibo en camino a ${o.cliente} por WhatsApp`);
   }catch(e){
     console.error(e);
-    alert('No se pudo encolar el ticket. Revisa tu conexión.');
+    alert('No se pudo enviar el recibo. Revisa tu conexión.');
   }
 };
+
+// ---------- Frases motivacionales (panel derecho en pantallas anchas) ----------
+const QUOTES=[
+  {c:'resiliencia', t:'Nuestra mayor gloria no está en no caer nunca, sino en levantarnos cada vez que caemos.', a:'Confucio'},
+  {c:'resiliencia', t:'Cae siete veces y levántate ocho.', a:'Proverbio japonés'},
+  {c:'resiliencia', t:'El éxito es ir de fracaso en fracaso sin perder el entusiasmo.', a:'Winston Churchill'},
+  {c:'resiliencia', t:'En medio de la dificultad reside la oportunidad.', a:'Albert Einstein'},
+  {c:'resiliencia', t:'Nunca, nunca, nunca te rindas.', a:'Winston Churchill'},
+  {c:'resiliencia', t:'Lo que no me mata, me hace más fuerte.', a:'Friedrich Nietzsche'},
+  {c:'resiliencia', t:'La adversidad despierta talentos que en la prosperidad habrían dormido.', a:'Horacio'},
+  {c:'motivacion', t:'El único modo de hacer un gran trabajo es amar lo que haces.', a:'Steve Jobs'},
+  {c:'motivacion', t:'Tanto si crees que puedes como si crees que no, estás en lo cierto.', a:'Henry Ford'},
+  {c:'motivacion', t:'El futuro pertenece a quienes creen en la belleza de sus sueños.', a:'Eleanor Roosevelt'},
+  {c:'motivacion', t:'No cuentes los días; haz que los días cuenten.', a:'Muhammad Ali'},
+  {c:'motivacion', t:'La mejor manera de predecir el futuro es crearlo.', a:'Peter Drucker'},
+  {c:'motivacion', t:'Un viaje de mil millas comienza con un solo paso.', a:'Lao Tsé'},
+  {c:'motivacion', t:'Empieza donde estás, usa lo que tienes, haz lo que puedas.', a:'Arthur Ashe'},
+  {c:'equipo', t:'Si quieres llegar rápido, ve solo; si quieres llegar lejos, ve acompañado.', a:'Proverbio africano'},
+  {c:'equipo', t:'Solos podemos hacer tan poco; juntos, tanto.', a:'Helen Keller'},
+  {c:'equipo', t:'Reunirse es un comienzo; seguir juntos, un progreso; trabajar juntos, un éxito.', a:'Henry Ford'},
+  {c:'equipo', t:'El talento gana partidos, pero el trabajo en equipo gana campeonatos.', a:'Michael Jordan'},
+  {c:'equipo', t:'Ninguno de nosotros es tan inteligente como todos nosotros juntos.', a:'Ken Blanchard'},
+];
+const QCAT_LABEL={resiliencia:'Resiliencia', motivacion:'Motivación', equipo:'Trabajo en equipo'};
+let qOrder=[], qPos=0, qTimer=null;
+function qShuffle(){ qOrder=[...QUOTES.keys()]; for(let i=qOrder.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [qOrder[i],qOrder[j]]=[qOrder[j],qOrder[i]]; } qPos=0; }
+function applyQuote(q){
+  const cat=document.getElementById('quote-cat');
+  cat.className='quote-cat '+q.c; cat.textContent=QCAT_LABEL[q.c];
+  document.getElementById('quote-text').textContent='“'+q.t+'”';
+  document.getElementById('quote-author').textContent='— '+q.a;
+}
+window.nextQuote=function(immediate){
+  if(!document.getElementById('quote-panel')) return;
+  if(!qOrder.length || qPos>=qOrder.length) qShuffle();
+  const q=QUOTES[qOrder[qPos++]];
+  const inner=document.getElementById('quote-inner');
+  if(immediate){ applyQuote(q); return; }
+  inner.classList.add('quote-fade');
+  setTimeout(()=>{ applyQuote(q); inner.classList.remove('quote-fade'); }, 350);
+};
+function restartQuoteTimer(){ if(qTimer) clearInterval(qTimer); qTimer=setInterval(()=>window.nextQuote(), 14000); }
+(function initQuotes(){
+  const panel=document.getElementById('quote-panel');
+  if(!panel) return;
+  window.nextQuote(true);            // primera frase sin parpadeo
+  restartQuoteTimer();
+  panel.addEventListener('click', ()=>{ window.nextQuote(); restartQuoteTimer(); });
+})();
 
 window.render=render;
 render();
