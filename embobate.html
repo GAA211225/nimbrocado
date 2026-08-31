@@ -638,6 +638,9 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch((err)=>console.warn('SW error:', err));
 }
 
+// No ofrecer "instalar como app" desde la versión web (solo navegador).
+window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); });
+
 const ordersCol = collection(db, "orders");
 const clientsCol = collection(db, "clients");
 const accessDocRef = doc(db, "config", "access");
