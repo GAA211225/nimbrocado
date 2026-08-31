@@ -510,7 +510,6 @@
     <button class="main-nav-btn" id="nav-ruta" onclick="showView('ruta')"><i class="ti ti-route" aria-hidden="true"></i> Ruta</button>
     <button class="main-nav-btn" id="nav-caja" onclick="showView('caja')"><i class="ti ti-cash" aria-hidden="true"></i> Caja</button>
     <button class="main-nav-btn" id="nav-precios" onclick="showView('precios')"><i class="ti ti-tag" aria-hidden="true"></i> Precios</button>
-    <button class="main-nav-btn" id="btn-instalar" style="display:none;margin-left:auto;color:#185FA5;" onclick="instalarApp()"><i class="ti ti-download" aria-hidden="true"></i> Instalar app</button>
   </div>
 
   <div id="view-pedidos">
@@ -847,31 +846,8 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch((err)=>console.warn('SW error:', err));
 }
 
-// Botón propio para instalar la app: Chrome avisa cuándo se puede y lo mostramos,
-// así no hay que buscarlo en el menú del navegador.
-let deferredInstall = null;
-window.addEventListener('beforeinstallprompt', (e)=>{
-  e.preventDefault();
-  deferredInstall = e;
-  const b = document.getElementById('btn-instalar');
-  if(b) b.style.display = 'flex';
-});
-window.instalarApp = async function(){
-  if(!deferredInstall){
-    alert('Para instalarla: abre el menú ⋮ de Chrome y elige "Instalar aplicación" o "Agregar a pantalla principal".\n\nSi no aparece, es porque ya la tienes instalada.');
-    return;
-  }
-  deferredInstall.prompt();
-  await deferredInstall.userChoice;
-  deferredInstall = null;
-  const b = document.getElementById('btn-instalar');
-  if(b) b.style.display = 'none';
-};
-window.addEventListener('appinstalled', ()=>{
-  deferredInstall = null;
-  const b = document.getElementById('btn-instalar');
-  if(b) b.style.display = 'none';
-});
+// No ofrecer "instalar como app" desde la versión web (solo navegador).
+window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); });
 
 const ordersCol = collection(db, "orders");
 const clientsCol = collection(db, "clients");
