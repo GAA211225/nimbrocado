@@ -1299,7 +1299,7 @@ function renderTable(){
               </button>`).join('')}
             <div class="kebab-divider"></div>
             <button class="kebab-item" onclick="downloadTicket('${o.id}')"><i class="ti ti-receipt" aria-hidden="true"></i> Descargar ticket (PDF)</button>
-            <button class="kebab-item" onclick="resendTicket('${o.id}')"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Reenviar ticket por WhatsApp</button>
+            <button class="kebab-item" onclick="resendTicket('${o.id}')"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Enviar recibo por WhatsApp</button>
             <div class="kebab-divider"></div>
             <button class="kebab-item" onclick="openEdit('${o.id}')"><i class="ti ti-edit" aria-hidden="true"></i> Editar pedido</button>
             <button class="kebab-item danger" onclick="deleteOrder('${o.id}')"><i class="ti ti-trash" aria-hidden="true"></i> Eliminar pedido</button>
@@ -1898,17 +1898,9 @@ window.saveOrder=async function(){
     if(editId){
       await persistOrderUpdate(editId, payload);
     } else {
-      const ref=await persistOrderNew(payload);
-      if(telefono){
-        const total=orderTotal(payload);
-        const resta=saldoRestante(payload);
-        await persistTicketQueue({
-          orderId: ref.id, cliente, telefono,
-          items: Object.entries(sabores).map(([f,q])=>`${f} x${q}`).join(', '),
-          total, pago, abono, resta,
-          status: 'pending', created: serverTimestamp()
-        }).catch(e=>console.warn('No se pudo encolar el ticket (se reintentará offline):', e));
-      }
+      // El recibo NO se envía solo: sale cuando tú lo revisas y tocas
+      // "Enviar recibo por WhatsApp" en el menú del pedido (chequeo humano).
+      await persistOrderNew(payload);
     }
 
     closeModal();
@@ -2018,7 +2010,9 @@ window.downloadTicket=function(id){
 window.resendTicket=async function(id){
   const o=orders.find(x=>x.id===id);
   if(!o){ alert('Pedido no encontrado.'); return; }
-  if(!o.telefono){ alert('Este pedido no tiene teléfono registrado.'); return; }
+  if(!o.telefono){ alert('Este pedido no tiene teléfono registrado. Agrégalo antes de enviar el recibo.'); return; }
+  if(!confirm(`¿Enviar el recibo por WhatsApp a ${o.cliente} (${o.telefono})?`)) return;
+  closeAllKebabs();
   try{
     const total=orderTotal(o);
     const resta=saldoRestante(o);
@@ -2028,10 +2022,10 @@ window.resendTicket=async function(id){
       total, pago:o.pago||'pendiente', abono:o.abono||0, resta,
       status:'pending', created:serverTimestamp()
     });
-    alert('Ticket encolado. Se enviará por WhatsApp en cuanto haya conexión.');
+    showToast(`Recibo en camino a ${o.cliente} por WhatsApp`);
   }catch(e){
     console.error(e);
-    alert('No se pudo encolar el ticket. Revisa tu conexión.');
+    alert('No se pudo enviar el recibo. Revisa tu conexión.');
   }
 };
 
