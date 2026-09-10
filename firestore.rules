@@ -42,7 +42,7 @@ service cloud.firestore {
         isString(request.resource.data.name) &&
         request.resource.data.name.size() > 0 &&
         isOptionalString(request.resource.data.phone);
-      allow delete: if true;
+      allow delete: if false; // la app no borra clientes; hacerlo desde la consola de Firebase
     }
 
     // ---- Configuración (código de acceso, precios, lotes) ----
