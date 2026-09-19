@@ -531,6 +531,7 @@
         <button class="tab" onclick="setTab('entregado',this)">Entregado</button>
         <button class="tab" onclick="setTab('cambio',this)">Por caducar</button>
         <button class="tab" onclick="setTab('deben',this)">Deben</button>
+        <button class="tab" onclick="setTab('historial',this)">Historial</button>
       </div>
     </div>
   </div>
@@ -1188,12 +1189,18 @@ function statusBadge(s){
   return `<span class="badge ${map[s]}"><i class="ti ${icon[s]||'ti-circle'}" style="font-size:12px;" aria-hidden="true"></i>${label[s]||s}</span>`;
 }
 
+// Un pedido pasa al historial cuando ya pasó una semana desde su fecha de pedido.
+// No se borra ni se mueve en la base: solo sale de las vistas de pendientes.
+const DIAS_HISTORIAL = 7;
+function isArchived(o){ const dl=daysLeft(o.fecha); return dl!==null && dl<=-DIAS_HISTORIAL; }
+function activeOrders(){ return orders.filter(o=>!isArchived(o)); }
+
 function renderStats(){
-  const total=orders.length, pendientes=orders.filter(o=>o.estatus==='pendiente').length,
-    enRuta=orders.filter(o=>o.estatus==='en ruta').length,
-    porCaducar=orders.filter(o=>{ const dl=daysLeft(o.cambio); return dl!==null&&dl<=3&&o.estatus!=='entregado'; }).length;
+  const act=activeOrders(), total=act.length, pendientes=act.filter(o=>o.estatus==='pendiente').length,
+    enRuta=act.filter(o=>o.estatus==='en ruta').length,
+    porCaducar=act.filter(o=>{ const dl=daysLeft(o.cambio); return dl!==null&&dl<=3&&o.estatus!=='entregado'; }).length;
   const data=[
-    {label:'Total pedidos',val:total,icon:'ti-clipboard-list',bg:'#E6F1FB',col:'#185FA5'},
+    {label:'Pedidos activos',val:total,icon:'ti-clipboard-list',bg:'#E6F1FB',col:'#185FA5'},
     {label:'Pendientes',val:pendientes,icon:'ti-clock',bg:'#FAEEDA',col:'#854F0B'},
     {label:'En ruta',val:enRuta,icon:'ti-truck',bg:'#E6F1FB',col:'#185FA5'},
     {label:'Por caducar',val:porCaducar,icon:'ti-alert-triangle',bg:'#FAECE7',col:'#993C1D'},
@@ -1229,13 +1236,15 @@ window.clearSearch=function(){
 
 function renderTable(){
   let filtered;
-  if(currentTab==='todos') filtered=orders;
+  if(currentTab==='historial') filtered=orders.filter(isArchived).sort((a,b)=>String(b.fecha||'').localeCompare(String(a.fecha||'')));
+  // "Deben" incluye el historial: una deuda no desaparece porque el pedido sea viejo
   else if(currentTab==='deben') filtered=orders.filter(o=>saldoRestante(o)>0);
-  else filtered=orders.filter(o=>o.estatus===currentTab);
+  else if(currentTab==='todos') filtered=activeOrders();
+  else filtered=activeOrders().filter(o=>o.estatus===currentTab);
   filtered=filtered.filter(matchesSearch);
   const tbody=document.getElementById('tbody');
   if(!filtered.length){
-    const msg=searchQuery?'Ningún pedido coincide con la búsqueda':'Sin pedidos en esta categoría';
+    const msg=searchQuery?'Ningún pedido coincide con la búsqueda':(currentTab==='historial'?'Aún no hay pedidos con más de una semana':'Sin pedidos en esta categoría');
     tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i><p>${msg}</p></div></td></tr>`;
     return;
   }
@@ -1321,7 +1330,7 @@ function render(){ renderStats(); renderTable(); renderCaducidad(); renderRuta()
 // ---------- Ruta de entregas ----------
 function rutaOrders(){
   const hoy=todayISO();
-  let list=orders.filter(o=>o.estatus==='pendiente'||o.estatus==='en ruta');
+  let list=activeOrders().filter(o=>o.estatus==='pendiente'||o.estatus==='en ruta');
   // "Para hoy": lo que ya tocaba salir (fecha de pedido de hoy o anterior)
   if(rutaTab==='hoy') list=list.filter(o=>!o.fecha||o.fecha<=hoy);
   return list.sort((a,b)=>String(a.fecha||'').localeCompare(String(b.fecha||'')) || String(a.cliente||'').localeCompare(String(b.cliente||'')));
